@@ -43,7 +43,7 @@ LabTemp IOT é um aplicativo com o objetivo de especificar um sistemade coleta c
 [Clique Aqui]()
 
 ### 🎨 FIGMA
-[Clique Aqui]<a target="_blank" href="https://www.figma.com/design/y0pcSNOmPBO2klzKAnKfZT/Untitled?node-id=0-1&p=f&t=GzqOL1SNGfxnOhwj-0">
+<a target="_blank" href="https://www.figma.com/design/y0pcSNOmPBO2klzKAnKfZT/Untitled?node-id=0-1&p=f&t=GzqOL1SNGfxnOhwj-0">[Clique aqui]</a>
 
 # :computer: EQUIPE
 
