@@ -1,9 +1,26 @@
 # LabTemp IOT
-<img src="../Projeto-ABP/logo/logo.png" width="200" height="200">
+<img src="./logo/logo.png" width="200" height="200">
 
 <h1>DESCRIÇÃO:</h1>    
-LabTemp IOT é um aplicativo com o objetivo de especificar um sistemade coleta continua de temperatura, transmitindo os valores via rede wi-fi para um servidor nuvem.
+O projeto tem como objetivo fazer um aplicativo multiplataforma(tendo uso tanto em computadores quanto sendo um mobile instalável), para o acompanhamento 
+de monitoração de temperaturas em estufas. 
 </div>
+
+## ⚙️ TECNOLOGIAS USADAS
+
+| Tecnologia       | Emoji  |
+|------------------|--------|
+| React Native     | 📱     |
+| Node.js          | 🖥️     |
+| Figma            | 🎨     |
+| Trello           | 📋     |
+| Visual Studio    | 💻     |
+| GitHub           | 🧑‍💻     |
+| PostgreSQL       | 🗃️     |
+| ESP32            | ⚙️     |
+| C++              | 🖥️     |
+| Docker           | 🐳     |
+---
 
 # 🗂️ SPRINTS
 | Sprint | Data de Início | Data de Entrega | Status  |
@@ -16,21 +33,26 @@ LabTemp IOT é um aplicativo com o objetivo de especificar um sistemade coleta c
 
 
 
-# BURNDOWN SP1
- <div align = center>
- </div>
+# 📌 Backlog do Produto
+---
+# Funcionais
+|     Requisitos Funcionais     |    Situação  |
+|-------------------------------|--------------|
+|Coletas de dados               | Em andamento | 
+|Uso em dispositivos Mobile     | Em andamento |
+|Represetação apartir de gráficos| Em andamento |
+|Envio de avisos                | Em andamento |
+---
+# Não Funcionais
+|  Requisitos Não Funcionais    |  Situação    |   
+|-------------------------------|--------------| 
+|Linguagem Node.JS              |              |
+|Programação em React Native,   |              |
+|C++ e Docker                   |              |
+|Bando de dados relacional      |              |
+|(PostgreeSql)                  |              |
+|Arduino                        |              |
 
------------------------------------------------------------------------------------
-
-# BURNDOWN SP2
- <div align = center>
- </div>
-
------------------------------------------------------------------------------------
-
-# BURNDOWN SP3
- <div align = center>
- </div>
 
 -----------------------------------------------------------------------------------
 
@@ -43,7 +65,7 @@ LabTemp IOT é um aplicativo com o objetivo de especificar um sistemade coleta c
 [Clique Aqui]()
 
 ### 🎨 FIGMA
-[Clique Aqui]()
+<a target="_blank" href="https://www.figma.com/design/y0pcSNOmPBO2klzKAnKfZT/Untitled?node-id=0-1&p=f&t=GzqOL1SNGfxnOhwj-0">[Clique aqui]</a>
 
 # :computer: EQUIPE
 
