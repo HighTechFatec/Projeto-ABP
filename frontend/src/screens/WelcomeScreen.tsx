@@ -32,6 +32,10 @@ const WelcomeScreen: React.FC = () => {
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
         <Text style={styles.link}>Cadastrar</Text>
       </TouchableOpacity>
+
+      {/* <TouchableOpacity onPress={() => navigation.navigate("MyAccount")}>
+        <Text style={styles.link}>Minha Conta</Text>
+      </TouchableOpacity> */}
     </View>
   );
 };
