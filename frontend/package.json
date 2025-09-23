@@ -19,6 +19,7 @@
     "react-native-web": "^0.21.0"
   },
   "devDependencies": {
+    "@types/expo__vector-icons": "^9.0.1",
     "@types/react": "~19.1.0",
     "typescript": "~5.9.2"
   },
