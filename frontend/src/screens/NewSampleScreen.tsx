@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#202123",
     marginLeft: 10,
     borderColor: "transparent",
-    borderRadius: 6,
+    borderRadius: 9,
   },
   saveButton: {
     flexDirection: "row",
