@@ -3,9 +3,16 @@
   "compilerOptions": {
     "strict": true,
     "module": "esnext",
+<<<<<<< HEAD
     "moduleResolution": "node",
     "jsx": "react-jsx",
     "resolveJsonModule": true,
     "esModuleInterop": true
+=======
+    "moduleResolution": "node",   
+    "jsx": "react-jsx",           
+    "resolveJsonModule": true,    
+    "esModuleInterop": true       
+>>>>>>> 26c58476ec52de3588dea019944c5c68b975a646
   }
 }
