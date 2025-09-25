@@ -27,7 +27,7 @@ const LoginScreen: React.FC = () => {
         placeholderTextColor={colors.text}
       />
 
-      <TouchableOpacity onPress={() => navigation.navigate("Home")} style={styles.button} activeOpacity={0.8}>
+      <TouchableOpacity onPress={() => navigation.navigate("App")} style={styles.button} activeOpacity={0.8}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 

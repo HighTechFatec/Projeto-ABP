@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import colors from "../theme/colors";
+import MenuOptions from "../components/MenuOptions";
 
 type MyAccountScreenProp = NativeStackNavigationProp<RootStackParamList, "MyAccount">;
 
