@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
+import {View, Text, TextInput, StyleSheet, TouchableOpacity,} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 
@@ -9,7 +9,6 @@ export default function NewSampleScreen() {
   const [tempMax, setTempMax] = useState(0);
   const [tempMin, setTempMin] = useState(0);
   const [unit, setUnit] = useState<"C" | "F" | "K">("C");
-  
 
   return (
     <View style={styles.container}>
@@ -115,6 +114,17 @@ export default function NewSampleScreen() {
           </Picker>
         </View>
       </View>
+
+      {/* Botão Salvar Amostra */}
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={() => {
+          console.log("Amostra salva:", {medicao, laboratorio, tempMax, tempMin, unit,});
+        }}
+      >
+        <Ionicons name="save-outline" size={20} color="#202123" />
+        <Text style={styles.saveText}>Salvar amostra</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -154,14 +164,14 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   tempInput: {
-  backgroundColor: "#202123",
-  color: "#2CB67D",
-  fontSize: 18,
-  fontWeight: "bold",
-  textAlign: "center",
-  width: 60,
-  borderRadius: 6,
-  padding: 5,
+    backgroundColor: "#202123",
+    color: "#2CB67D",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    width: 60,
+    borderRadius: 6,
+    padding: 5,
   },
   tempBox: {
     backgroundColor: "#343541",

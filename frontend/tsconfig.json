@@ -3,5 +3,9 @@
   "compilerOptions": {
     "strict": true,
     "module": "esnext",
+    "moduleResolution": "node",   
+    "jsx": "react-jsx",           
+    "resolveJsonModule": true,    
+    "esModuleInterop": true       
   }
 }
