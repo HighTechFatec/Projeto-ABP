@@ -6,6 +6,7 @@ import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
 import HomeScreen from "../screens/HomeScreen";
 import MyAccountScreen from "../screens/MyAccountScreen";
+import DataGraphicScreen from "../screens/DataGraphicScreen";
 
 export type RootStackParamList = {
   Welcome: undefined;
@@ -18,6 +19,7 @@ export type RootStackParamList = {
   Notifications: undefined;
   Account: undefined;
   MyAccount: undefined;
+  DataGraphic: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -31,6 +33,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="MyAccount" component={MyAccountScreen} />
+        <Stack.Screen name="Graphs" component={DataGraphicScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
