@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, View, Text, StyleSheet } from "react-native";
+import { ScrollView, Text, StyleSheet } from "react-native";
 import ChartCard from "../components/ChartCard";
 import colors from "../theme/colors";
 

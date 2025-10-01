@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../theme/colors";
-import splash from "../assets/splash-icon.png";
+import testIcon from "../assets/icon.png";
 
 type HomeScreenProp = NativeStackNavigationProp<RootStackParamList, "Home">;
 
@@ -17,31 +17,33 @@ const Home: React.FC = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="flask-outline" size={28} color="#fff" /> 
-        <Text style={styles.headerText}>User</Text>
+        <Text style={styles.headerText}>Olá, User</Text>
         <Ionicons name="person-circle-outline" size={28} color="#fff" />
       </View>  
       
       <View style={styles.search}>
-        <Ionicons name="search" size={26} color="#fff" style={{position: "relative", top: 38, left: 10}} />
+        <Ionicons name="search" size={26} color="#fff" style={{position: "absolute", top: 11, left: 10}} />
         <TextInput
           style={styles.input}
           placeholder="Pesquisar"
         />
       </View>
       
-      <ScrollView style={{ flexDirection: "column" }} horizontal={true}>
-        <MenuOptions text="Amostra" image={splash} navigatesTo="Sample"/> 
-        <MenuOptions text="Gráficos" image={splash} navigatesTo="Graphs"/>
-        <MenuOptions text="Histórico" image={splash} navigatesTo="History"/>
-        <MenuOptions text="Notificação" image={splash} navigatesTo="Notifications"/>
-        <MenuOptions text="Minha conta" image={splash} navigatesTo="Account"/>
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 15 }} style={{ display: "contents" }}>
+        <MenuOptions text="Amostra" image={testIcon} navigatesTo="Sample"/> 
+        <MenuOptions text="Gráficos" image={testIcon} navigatesTo="Graphs"/>
+        <MenuOptions text="Histórico" image={testIcon} navigatesTo="History"/>
+        <MenuOptions text="Notificação" image={testIcon} navigatesTo="Notifications"/>
+        <MenuOptions text="Minha conta" image={testIcon} navigatesTo="MyAccount"/>
       </ScrollView>
 
       <View style={styles.card}>
-        <Image source={splash} style={{width: 120, height: 120, resizeMode: "contain"}}/>
-        <Text>Título</Text>
-        <Text>Subtítulo</Text>
-        <Text>Lorem Ipsum</Text>
+        <Image source={testIcon} style={styles.cardImage}/>
+        <View style={{ paddingHorizontal: 10, paddingVertical: 17 }}>
+          <Text style={{ color: colors.highlight, fontWeight: "bold", fontSize: 18 }}>Título</Text>
+          <Text style={{ color: colors.white, marginBottom: 15 }}>Subtítulo</Text>
+          <Text style={{ color: colors.white }}>Lorem Ipsum</Text>
+        </View>
       </View>
     </View>
   );
@@ -76,9 +78,25 @@ const styles = StyleSheet.create({
     color: colors.highlight
   },
   search: {
-    marginBottom: 50
+    marginBottom: 50,
+    position: "relative"
   },
   card: {
-    width: "100%"
+    width: "100%",
+    marginTop: 40,
+    backgroundColor: colors.cardBackground,
+    borderRadius: 10,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  cardImage: {
+    height: 150,
+    width: "100%", 
+    resizeMode: "cover", 
+    borderTopLeftRadius: 10, 
+    borderTopRightRadius: 10 
   }
 });

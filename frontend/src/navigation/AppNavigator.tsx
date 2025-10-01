@@ -2,6 +2,7 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import colors from "../theme/colors";
 import "react-native-gesture-handler";
 
 // Importando telas
@@ -24,11 +25,8 @@ export type RootStackParamList = {
   Notifications: undefined;
   Account: undefined;
   MyAccount: undefined;
-<<<<<<< HEAD
   DataGraphic: undefined;
-=======
   App: undefined;
->>>>>>> 26c58476ec52de3588dea019944c5c68b975a646
 };
 
 // Stack principal (para login e registro)
@@ -43,14 +41,24 @@ function DrawerNavigator() {
     <Drawer.Navigator
       initialRouteName="Home"
       screenOptions={{
-        headerShown: true, // Mostra header com o ícone de 3 barrinhas
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: colors.cardBackground,
+          borderBottomWidth: 0,
+        },
+        headerTintColor: colors.white,
+        drawerStyle: {
+          backgroundColor: colors.cardBackground,
+          width: "60%",
+          height: "50%"
+        },
+        drawerActiveBackgroundColor: colors.primary,
+        drawerActiveTintColor: colors.black,
+        drawerInactiveTintColor: colors.white
       }}
     >
       <Drawer.Screen name="Home" component={HomeScreen} />
       <Drawer.Screen name="MyAccount" component={MyAccountScreen} />
-      {/* Se quiser adicionar mais telas internas: */}
-      {/* <Drawer.Screen name="History" component={HistoryScreen} /> */}
-      {/* <Drawer.Screen name="Graphs" component={GraphsScreen} /> */}
     </Drawer.Navigator>
   );
 }
@@ -60,19 +68,13 @@ const AppNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
-        {/* Telas de autenticação */}
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
-<<<<<<< HEAD
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="MyAccount" component={MyAccountScreen} />
         <Stack.Screen name="Graphs" component={DataGraphicScreen} />
-=======
-
-        {/* Drawer dentro do Stack */}
         <Stack.Screen name="App" component={DrawerNavigator} />
->>>>>>> 26c58476ec52de3588dea019944c5c68b975a646
       </Stack.Navigator>
     </NavigationContainer>
   );

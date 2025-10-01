@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   text: {
-    color: colors.highlight
+    color: colors.highlight,
+    marginTop: 5
   }
 })
