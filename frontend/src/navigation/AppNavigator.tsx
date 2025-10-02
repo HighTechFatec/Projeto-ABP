@@ -59,6 +59,7 @@ function DrawerNavigator() {
     >
       <Drawer.Screen name="Home" component={HomeScreen} />
       <Drawer.Screen name="MyAccount" component={MyAccountScreen} />
+      <Drawer.Screen name="Graphs" component={DataGraphicScreen} />
     </Drawer.Navigator>
   );
 }

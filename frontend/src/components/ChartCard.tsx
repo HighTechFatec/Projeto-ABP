@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
-import { VictoryLine } from "victory-native";
+import { LineChart } from "react-native-chart-kit";
 import colors from "../theme/colors";
 
 type ChartCardProps = {
@@ -11,15 +11,42 @@ type ChartCardProps = {
 const ChartCard: React.FC<ChartCardProps> = ({ title, data }) => {
   const screenWidth = Dimensions.get("window").width;
 
+  // Converter [{x, y}] -> chart-kit format
+  const chartData = {
+    labels: data.map((point) => String(point.x)),
+    datasets: [
+      {
+        data: data.map((point) => point.y),
+        color: (opacity = 1) => colors.primary, // cor da linha
+        strokeWidth: 2,
+      },
+    ],
+  };
+
   return (
     <View style={styles.card}>
       <Text style={styles.title}>{title}</Text>
-      <VictoryLine
-        data={data}
+      <LineChart
+        data={chartData}
         width={screenWidth * 0.85}
         height={200}
+        chartConfig={{
+          backgroundColor: colors.cardBackground,
+          backgroundGradientFrom: colors.cardBackground,
+          backgroundGradientTo: colors.cardBackground,
+          decimalPlaces: 1,
+          color: (opacity = 1) => colors.highlight,
+          labelColor: (opacity = 1) => colors.white,
+          propsForDots: {
+            r: "4",
+            strokeWidth: "2",
+            stroke: colors.primary,
+          },
+        }}
+        bezier
         style={{
-          data: { stroke: colors.primary, strokeWidth: 3 },
+          borderRadius: 12,
+          marginVertical: 8,
         }}
       />
     </View>

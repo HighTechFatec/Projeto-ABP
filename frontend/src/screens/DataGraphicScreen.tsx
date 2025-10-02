@@ -4,7 +4,6 @@ import ChartCard from "../components/ChartCard";
 import colors from "../theme/colors";
 
 const DataGraphicScreen: React.FC = () => {
-  // Exemplo de dados fictícios
   const tempData = [
     { x: 1, y: 22 },
     { x: 2, y: 24 },
