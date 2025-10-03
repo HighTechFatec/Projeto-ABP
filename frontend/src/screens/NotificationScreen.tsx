@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,Text,TextInput,StyleSheet,TouchableOpacity,
-} from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function NotificationScreen() {
@@ -17,7 +15,7 @@ export default function NotificationScreen() {
     <View style={styles.container}>
       {/* Cabeçalho */}
       <View style={styles.header}>
-        <Ionicons name="menu-outline" size={28} color="#DBD7DF" />
+        <Ionicons name="flask-outline" size={28} color="#DBD7DF" />
         <Text style={styles.headerText}>
           Olá <Text style={{ color: "#2CB67D" }}>user01</Text>
         </Text>
@@ -29,7 +27,7 @@ export default function NotificationScreen() {
         <Ionicons name="search-outline" size={20} color="#DBD7DF" />
         <TextInput
           style={styles.input}
-          placeholder="Input"
+          placeholder="Buscar Notificações..."
           placeholderTextColor="#DBD7DF"
           value={input}
           onChangeText={setInput}
