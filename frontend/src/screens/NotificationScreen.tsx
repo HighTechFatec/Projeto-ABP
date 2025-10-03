@@ -15,21 +15,12 @@ export default function NotificationScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <Ionicons name="menu-outline" size={28} color="#DBD7DF" />
-        <Text style={styles.headerText}>
-          Olá <Text style={{ color: "#2CB67D" }}>user01</Text>
-        </Text>
-        <Ionicons name="person-circle-outline" size={28} color="#DBD7DF" />
-      </View>
-
       {/* Campo de Input */}
       <View style={styles.inputContainer}>
         <Ionicons name="search-outline" size={20} color="#DBD7DF" />
         <TextInput
           style={styles.input}
-          placeholder="Input"
+          placeholder="Pesquisar notificações"
           placeholderTextColor="#DBD7DF"
           value={input}
           onChangeText={setInput}
@@ -71,12 +62,11 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#DBD7DF",
-    borderRadius: 6,
+    backgroundColor: "#343541",
+    borderRadius: 8,
     paddingHorizontal: 10,
+    paddingVertical: 5,
     marginBottom: 20,
-    height: 45,
   },
   input: {
     flex: 1,

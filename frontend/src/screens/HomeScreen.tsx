@@ -1,35 +1,36 @@
 import React from "react";
 import MenuOptions from "../components/MenuOptions";
-import { View, Text, StyleSheet, Image, TextInput, ScrollView } from "react-native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { View, Text, StyleSheet, Image, TextInput, ScrollView, TouchableOpacity } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
-import { Ionicons } from "@expo/vector-icons";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import colors from "../theme/colors";
 import testIcon from "../assets/icon.png";
 
-type HomeScreenProp = NativeStackNavigationProp<RootStackParamList, "Home">;
-
 const Home: React.FC = () => {
-  const navigation = useNavigation<HomeScreenProp>();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="flask-outline" size={28} color="#fff" /> 
         <Text style={styles.headerText}>Olá, User</Text>
-        <Ionicons name="person-circle-outline" size={28} color="#fff" />
+        <TouchableOpacity onPress={() => navigation.navigate("MyAccount")}>
+          <Ionicons name="person-circle-outline" size={28} color="#fff" />
+        </TouchableOpacity>
       </View>  
       
       <View style={styles.search}>
-        <Ionicons name="search" size={26} color="#fff" style={{position: "absolute", top: 11, left: 10}} />
+        <Ionicons name="search-outline" size={20} color="#DBD7DF" />
         <TextInput
           style={styles.input}
           placeholder="Pesquisar"
+          placeholderTextColor="#DBD7DF"
         />
       </View>
       
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 15 }} style={{ display: "contents" }}>
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 15 }} style={{ maxHeight: 170 }}>
         <MenuOptions text="Amostra" image={testIcon} navigatesTo="Sample"/> 
         <MenuOptions text="Gráficos" image={testIcon} navigatesTo="Graphs"/>
         <MenuOptions text="Histórico" image={testIcon} navigatesTo="History"/>
@@ -55,16 +56,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.background,
     padding: 30,
-    height: "100%",
-    width: "100%"
+    flex: 1
   },
   input: {
-    height: 50,
-    paddingLeft: 45,
-    borderRadius: 3,
-    borderColor: colors.white,
-    borderWidth: 1,
-    color: colors.white
+    marginLeft: 8,
+    flex: 1,
+    color: "#DBD7DF",
   },
   header: {
     flexDirection: "row",
@@ -78,8 +75,13 @@ const styles = StyleSheet.create({
     color: colors.highlight
   },
   search: {
-    marginBottom: 50,
-    position: "relative"
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#343541",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginBottom: 20,
   },
   card: {
     width: "100%",

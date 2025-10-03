@@ -1,19 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView, Image } from "react-native";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import colors from "../theme/colors";
 
 export default function AmostrasScreen({ navigation }: any) {
   return (
     <View style={styles.container}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <Ionicons name="flask-outline" size={28} color="#DBD7DF" />
-        <Text style={styles.headerText}>
-          Olá <Text style={{ color: "#2CB67D" }}>user01</Text>
-        </Text>
-        <Ionicons name="person-circle-outline" size={28} color="#DBD7DF" />
-      </View> 
-
       {/* Barra de busca */}
       <View style={styles.searchBox}>
         <Ionicons name="search-outline" size={20} color="#DBD7DF" />
@@ -136,4 +128,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  backButton: {
+    paddingVertical: 20,
+    color: colors.primary,
+    alignSelf: "center"
+  }
 });

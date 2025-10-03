@@ -88,5 +88,6 @@ const styles = StyleSheet.create({
   link: {
     color: colors.primary,
     fontSize: 16,
+    paddingTop: 10
   },
 });

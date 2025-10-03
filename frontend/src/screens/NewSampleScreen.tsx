@@ -1,7 +1,11 @@
 import React, { useState } from "react";
-import {View, Text, TextInput, StyleSheet, TouchableOpacity,} from "react-native";
+import {View, Text, TextInput, StyleSheet, TouchableOpacity} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
+import { useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../navigation/AppNavigator";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import colors from "../theme/colors";
 
 export default function NewSampleScreen() {
   const [medicao, setMedicao] = useState("");
@@ -10,15 +14,16 @@ export default function NewSampleScreen() {
   const [tempMin, setTempMin] = useState(0);
   const [unit, setUnit] = useState<"C" | "F" | "K">("C");
 
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   return (
     <View style={styles.container}>
       {/* Cabeçalho */}
       <View style={styles.header}>
         <Ionicons name="flask-outline" size={28} color="#DBD7DF" />
         <Text style={styles.headerText}>
-          Olá <Text style={{ color: "#2CB67D" }}>user01</Text>
+          Nova amostra
         </Text>
-        <Ionicons name="person-circle-outline" size={28} color="#DBD7DF" />
       </View>
 
       {/* Campo Nome Medição */}
@@ -125,6 +130,10 @@ export default function NewSampleScreen() {
         <Ionicons name="save-outline" size={20} color="#202123" />
         <Text style={styles.saveText}>Salvar amostra</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => navigation.goBack()}>
+        <Text style={styles.backButton}>Voltar</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -143,6 +152,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 18,
+    position: "absolute",
+    left: "35%",
     fontWeight: "bold",
     color: "#DBD7DF",
   },
@@ -212,4 +223,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  backButton: {
+    paddingTop: 20,
+    color: colors.primary,
+    alignSelf: "center"
+  }
 });

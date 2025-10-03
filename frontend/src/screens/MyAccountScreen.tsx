@@ -1,16 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "../navigation/AppNavigator";
 import colors from "../theme/colors";
-import MenuOptions from "../components/MenuOptions";
-
-type MyAccountScreenProp = NativeStackNavigationProp<RootStackParamList, "MyAccount">;
 
 const MyAccountScreen: React.FC = () => {
-  const navigation = useNavigation<MyAccountScreenProp>();
-
   const [editable, setEditable] = useState(false);
   const [username, setUsername] = useState("User001");
   const [phone, setPhone] = useState("");
@@ -25,7 +17,7 @@ const MyAccountScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Olá {username}</Text>
+      <Text style={styles.header}>{username}</Text>
 
       <TextInput
         style={styles.input}
@@ -70,10 +62,6 @@ const MyAccountScreen: React.FC = () => {
       <TouchableOpacity style={styles.button} activeOpacity={0.8} onPress={handleSave}>
         <Text style={styles.buttonText}>Salvar</Text>
       </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.link}>Voltar</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -89,15 +77,14 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "limegreen",
+    color: colors.highlight,
     marginBottom: 20,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#aaa",
     borderRadius: 8,
     padding: 10,
     marginBottom: 15,
+    backgroundColor: "#343541",
     color: "#fff",
   },
   button: {
