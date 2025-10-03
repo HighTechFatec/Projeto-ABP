@@ -1,5 +1,5 @@
 # LabTemp IOT
-<img src="./logo/logo.png" width="200" height="200">
+<img src="./frontend/src/assets/Logo_LabConnect.jpeg" width="200" height="200">
 
 <h1>DESCRIÇÃO:</h1>    
 O projeto tem como objetivo fazer um aplicativo multiplataforma(tendo uso tanto em computadores quanto sendo um mobile instalável), para o acompanhamento 

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,Text,TextInput,StyleSheet,TouchableOpacity,
-} from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function NotificationScreen() {
@@ -20,7 +18,7 @@ export default function NotificationScreen() {
         <Ionicons name="search-outline" size={20} color="#DBD7DF" />
         <TextInput
           style={styles.input}
-          placeholder="Pesquisar notificações"
+          placeholder="Buscar Notificações..."
           placeholderTextColor="#DBD7DF"
           value={input}
           onChangeText={setInput}
