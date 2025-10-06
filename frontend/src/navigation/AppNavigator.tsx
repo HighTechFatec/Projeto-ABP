@@ -1,7 +1,7 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from "@react-navigation/drawer";
 import colors from "../theme/colors";
 import "react-native-gesture-handler";
 
@@ -16,6 +16,7 @@ import SampleScreen from "../screens/SampleScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import NewSampleScreen from "../screens/NewSampleScreen";
 import HistoricoScreen from "../screens/HistoryScreen";
+import { Alert, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 
 // Definição dos tipos de rotas
 export type RootStackParamList = {
@@ -40,11 +41,51 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 // Drawer Navigator (para as telas internas)
 const Drawer = createDrawerNavigator<RootStackParamList>();
 
+// 🔹 Drawer customizado com botão de logout
+import type { DrawerContentComponentProps } from "@react-navigation/drawer";
+import { MaterialIcons } from "@expo/vector-icons";
+
+function CustomDrawerContent(props: DrawerContentComponentProps) {
+  const handleLogout = () => {
+    Alert.alert(
+      "Sair",
+      "Tem certeza que deseja sair?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sair",
+          style: "destructive",
+          onPress: () => {
+            props.navigation.reset({
+              index: 0,
+              routes: [{ name: "Login" }],
+            });
+          },
+        },
+      ]
+    );
+  };
+
+  return (
+    <DrawerContentScrollView {...props}>
+      <DrawerItemList {...props} />
+       {/* 🔹 Botão estilizado de Logout */}
+      <View style={styles.logoutContainer}>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <MaterialIcons name="logout" size={22} color={colors.white} />
+          <Text style={styles.logoutText}>Sair</Text>
+        </TouchableOpacity>
+      </View>
+    </DrawerContentScrollView>
+  );
+}
+
 // Drawer com as telas de navegação lateral
 function DrawerNavigator() {
   return (
     <Drawer.Navigator
       initialRouteName="Home"
+      drawerContent={(props) => <CustomDrawerContent {...props} />} // ⬅️ adiciona o botão aqui
       screenOptions={{
         headerShown: true,
         headerStyle: {
@@ -94,3 +135,26 @@ const AppNavigator: React.FC = () => {
 };
 
 export default AppNavigator;
+
+const styles = StyleSheet.create({
+  logoutContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255,255,255,0.2)",
+  },
+  logoutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.primary,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  logoutText: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 8,
+  },
+});

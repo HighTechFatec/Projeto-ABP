@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, BackHandler, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
@@ -31,7 +31,27 @@ const LoginScreen: React.FC = () => {
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.goBack()}>
+      <TouchableOpacity
+        onPress={() => {
+          if (navigation.canGoBack()) {
+            navigation.goBack();
+          } else {
+            Alert.alert(
+              "Sair do aplicativo",
+              "Tem certeza que deseja sair?",
+              [
+                { text: "Cancelar", style: "cancel" },
+                {
+                  text: "Sair",
+                  style: "destructive",
+                  onPress: () => BackHandler.exitApp(),
+                },
+              ],
+              { cancelable: true }
+            );
+          }
+        }}
+      >
         <Text style={styles.link}>Voltar</Text>
       </TouchableOpacity>
     </View>
