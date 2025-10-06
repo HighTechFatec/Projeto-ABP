@@ -2,6 +2,9 @@ import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import usersRoutes from './routes/RoutesUsuario';
+import dadosRoutes from './routes/RoutesDados'
+import { initializeDatabase } from './config/init';
+import {createDatabaseIfNotExists} from './config/create'
 
 dotenv.config();
 
@@ -25,24 +28,25 @@ class Server {
 
   private initializeRoutes(): void {
     this.app.use('/api/usuario', usersRoutes);
+    this.app.use('/dados',dadosRoutes);
     
-    this.app.get('/health', (req: Request, res: Response) => {
-      res.json({ 
-        status: 'OK', 
-        message: 'API está funcionando!',
-        timestamp: new Date().toISOString()
-      });
-    });
+    // this.app.get('/health', (req: Request, res: Response) => {
+    //   res.json({ 
+    //     status: 'OK', 
+    //     message: 'API está funcionando!',
+    //     timestamp: new Date().toISOString()
+    //   });
+    // });
 
-    this.app.get('/', (req: Request, res: Response) => {
-      res.json({ 
-        message: 'Bem-vindo à API com TypeScript!',
-        endpoints: {
-          users: '/api/usuario',
-          health: '/health'
-        }
-      });
-    });
+    // this.app.get('/', (req: Request, res: Response) => {
+    //   res.json({ 
+    //     message: 'Bem-vindo à API com TypeScript!',
+    //     endpoints: {
+    //       users: '/api/usuario',
+    //       health: '/health'
+    //     }
+    //   });
+    // });
   }
 
   private initializeErrorHandling(): void {
@@ -59,13 +63,20 @@ class Server {
 
   }
 
-  public start(): void {
+ public async start(): Promise<void> {
+  try {
+    await createDatabaseIfNotExists();
+    await initializeDatabase();
     this.app.listen(this.port, () => {
       console.log(`🚀 Servidor TypeScript rodando na porta ${this.port}`);
       console.log(`📊 Ambiente: ${process.env.NODE_ENV || 'development'}`);
     });
+  } catch (error) {
+    console.error('❌ Falha na inicialização da aplicação:', error);
   }
+}
 }
 
 const server = new Server();
 server.start();
+
