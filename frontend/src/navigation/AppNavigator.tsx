@@ -15,6 +15,7 @@ import DataGraphicScreen from "../screens/DataGraphicScreen";
 import SampleScreen from "../screens/SampleScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import NewSampleScreen from "../screens/NewSampleScreen";
+import HistoricoScreen from "../screens/HistoryScreen";
 
 // Definição dos tipos de rotas
 export type RootStackParamList = {
@@ -62,10 +63,11 @@ function DrawerNavigator() {
       }}
     >
       <Drawer.Screen name="Home" component={HomeScreen} />
-      <Drawer.Screen options={{title: "Minha conta"}} name="MyAccount" component={MyAccountScreen} />
-      <Drawer.Screen options={{title: "Gráficos"}} name="Graphs" component={DataGraphicScreen} />
       <Drawer.Screen options={{title: "Amostra"}} name="Sample" component={SampleScreen} />
+      <Drawer.Screen options={{title: "Gráficos"}} name="Graphs" component={DataGraphicScreen} />
       <Drawer.Screen options={{title: "Notificações"}} name="Notifications" component={NotificationScreen} />
+      <Drawer.Screen options={{title: "Histórico"}} name="History" component={HistoricoScreen} />
+      <Drawer.Screen options={{title: "Minha conta"}} name="MyAccount" component={MyAccountScreen} />
     </Drawer.Navigator>
   );
 }
@@ -81,6 +83,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="MyAccount" component={MyAccountScreen} />
         <Stack.Screen name="Graphs" component={DataGraphicScreen} />
+        <Stack.Screen name="History" component={HistoricoScreen} />
         <Stack.Screen name="NewSample" component={NewSampleScreen} />
         <Stack.Screen name="Sample" component={SampleScreen} />
         <Stack.Screen name="Notifications" component={NotificationScreen} />
