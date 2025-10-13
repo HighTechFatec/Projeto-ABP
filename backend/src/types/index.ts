@@ -3,6 +3,7 @@ export interface Usuario{
     nome:string;
     email:string;
     senha:string;
+    telefone:string;
     id_laboratorio:number;
 }
 export interface Laboratorio{
@@ -15,17 +16,34 @@ export interface dados_coletados{
     temperatura:number;
     data_hora:Date;
 }
+export interface Avisos{
+    id?:number;
+    temp_min:number;
+    temp_max:number;
+    id_usuario:number
+}
 export interface CreateUserRequest{
     nome:string;
     email:string;
     senha:string;
+    telefone:string;
     id_laboratorio:number
 }
 export interface UpdateRequest{
     nome?:string;
     email?:string;
     senha?:string;
+    telefone?:string;
     id_laboratorio?:number;
+}
+export interface CreateAvisoRequest{
+    temp_min:number;
+    temp_max:number;
+    id_usuario:number;
+}
+export interface UpdateAvisoRequest{
+    temp_min?:number;
+    temp_max?:number;
 }
 export interface DatabaseConfig {
   host: string;

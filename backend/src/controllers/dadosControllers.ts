@@ -5,7 +5,7 @@ import  ModelDados from '../model/Dados';
 export const dadosControllers = {
   async getAllDados(req: Request, res: Response): Promise<void> {
     try {
-      const dados = await ModelDados.findAll(); // Chamada correta ao método da instância
+      const dados = await ModelDados.findAll();
       res.json(dados);
     } catch (error: any) {
       res.status(500).json({ error: error.message });

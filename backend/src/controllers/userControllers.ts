@@ -35,9 +35,9 @@ export const userController = {
 
   async createUser(req: Request, res: Response): Promise<void> {
     try {
-      const { nome, email, senha, id_laboratorio }: CreateUserRequest = req.body;
+      const { nome, email, senha, telefone,id_laboratorio }: CreateUserRequest = req.body;
 
-      if (!nome || !email ||!senha ||!id_laboratorio) {
+      if (!nome || !email ||!senha ||!id_laboratorio || !telefone) {
         res.status(400).json({ error: 'Nome e email são obrigatórios' });
         return;
       }
@@ -48,7 +48,7 @@ export const userController = {
         return;
       }
 
-      const newUser = await Modelusuario.create({ nome, email, senha,id_laboratorio });
+      const newUser = await Modelusuario.create({ nome, email, senha,telefone,id_laboratorio });
       res.status(201).json(newUser);
     } catch (error: any) {
       res.status(400).json({ error: error.message });

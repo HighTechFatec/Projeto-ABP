@@ -18,16 +18,16 @@ export class Modelusuario {
   }
 
   async create(userData: CreateUserRequest): Promise<Usuario> {
-    const { nome, email, senha, id_laboratorio } = userData;
+    const { nome, email, senha, telefone,id_laboratorio } = userData;
     const result = await database.query(
-      'INSERT INTO usuario (nome, email, senha,id_laboratorio) VALUES ($1, $2, $3,$4) RETURNING *',
+      'INSERT INTO usuario (nome, email, senha,telefone,id_laboratorio) VALUES ($1, $2, $3,$4,$5) RETURNING *',
       [nome, email, senha,id_laboratorio]
     );
     return result.rows[0];
   }
 
   async update(id: number, userData: UpdateRequest): Promise<Usuario | null> {
-    const { nome, email, senha,id_laboratorio } = userData;
+    const { nome, email, senha,id_laboratorio,telefone } = userData;
     
     const fields: string[] = [];
     const values: any[] = [];
@@ -54,6 +54,12 @@ export class Modelusuario {
     if(id_laboratorio !==undefined) {
       fields.push(`id_laboratorio = $${paramCount}`);
       values.push(id_laboratorio);
+      paramCount++;
+    }
+
+    if(telefone !==undefined) {
+      fields.push(`telefone = $${paramCount}`);
+      values.push(telefone);
       paramCount++;
     }
 

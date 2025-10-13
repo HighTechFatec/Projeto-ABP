@@ -2,7 +2,8 @@ import express, { Application, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import usersRoutes from './routes/RoutesUsuario';
-import dadosRoutes from './routes/RoutesDados'
+import dadosRoutes from './routes/RoutesDados';
+import avisoRoutes from './routes/RoutesAviso'
 import { initializeDatabase } from './config/init';
 import {createDatabaseIfNotExists} from './config/create'
 
@@ -29,6 +30,7 @@ class Server {
   private initializeRoutes(): void {
     this.app.use('/api/usuario', usersRoutes);
     this.app.use('/dados',dadosRoutes);
+    this.app.use('avisos',avisoRoutes)
     
     // this.app.get('/health', (req: Request, res: Response) => {
     //   res.json({ 
