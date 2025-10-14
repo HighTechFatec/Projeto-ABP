@@ -14,7 +14,7 @@ export class ModelAvisos{
   async create(avisorData: CreateAvisoRequest): Promise<Avisos> {
     const { temp_min, temp_max, id_usuario } = avisorData;
     const result = await database.query(
-      'INSERT INTO usuario (temp_min, temp_max, id_usuario) VALUES ($1, $2, $3) RETURNING *',
+      'INSERT INTO avisos (temp_min, temp_max, id_usuario) VALUES ($1, $2, $3) RETURNING *',
       [temp_min, temp_max, id_usuario]
     );
     return result.rows[0];
