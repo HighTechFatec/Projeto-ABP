@@ -30,7 +30,7 @@ class Server {
   private initializeRoutes(): void {
     this.app.use('/api/usuario', usersRoutes);
     this.app.use('/dados',dadosRoutes);
-    this.app.use('avisos',avisoRoutes)
+    this.app.use('/avisos',avisoRoutes)
     
     // this.app.get('/health', (req: Request, res: Response) => {
     //   res.json({ 
