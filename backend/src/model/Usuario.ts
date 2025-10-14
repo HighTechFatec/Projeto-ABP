@@ -21,7 +21,7 @@ export class Modelusuario {
     const { nome, email, senha, telefone,id_laboratorio } = userData;
     const result = await database.query(
       'INSERT INTO usuario (nome, email, senha,telefone,id_laboratorio) VALUES ($1, $2, $3,$4,$5) RETURNING *',
-      [nome, email, senha,id_laboratorio]
+      [nome, email, senha,telefone, id_laboratorio]
     );
     return result.rows[0];
   }
