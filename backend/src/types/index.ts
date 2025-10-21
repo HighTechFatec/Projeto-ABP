@@ -52,3 +52,30 @@ export interface DatabaseConfig {
   user: string;
   password: string;
 }
+
+export interface Amostra {
+  id?: number;
+  nome: string;
+  data_inicio: Date;
+  data_fim: Date;
+  temp_min: number;
+  temp_max: number;
+  id_usuario: number;
+}
+
+export interface CreateAmostraRequest {
+  nome: string;
+  data_inicio: Date;
+  data_fim: Date;
+  temp_min: number;
+  temp_max: number;
+  id_usuario: number;
+}
+
+export interface UpdateAmostraRequest {
+  nome?: string;
+  data_inicio?: Date;
+  data_fim?: Date;
+  temp_min?: number;
+  temp_max?: number;
+}
