@@ -1,56 +1,74 @@
+#include <WiFi.h>
+#include <PubSubClient.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include <LiquidCrystal_I2C.h>
 
-// Data wire is plugged into port 2 on the Arduino
 #define ONE_WIRE_BUS 27
-#define LED_PIN 33
 
-// Setup a oneWire instance to communicate with any OneWire devices (not just Maxim/Dallas temperature ICs)
+const char* ssid = "LAB 108";
+const char* password = "fatec258";
+
+const char* mqtt_server = "10.68.55.212";
+const int mqtt_port = 1883;
+const char* mqtt_topic = "sensors/temperature";
+
 OneWire oneWire(ONE_WIRE_BUS);
-
-LiquidCrystal_I2C lcd(0x27,16,2); 
-
-// Pass our oneWire reference to Dallas Temperature. 
 DallasTemperature sensors(&oneWire);
 
-void setup()
-{
-  lcd.init();                 
-  lcd.backlight();
+WiFiClient espClient;
+PubSubClient client(espClient);
 
+void setup_wifi() {
+  Serial.print("Connecting to Wi-Fi...");
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\n✅ Wi-Fi connected!");
+  Serial.print("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void reconnect() {
+  while (!client.connected()) {
+    Serial.print("Connecting to MQTT...");
+    if (client.connect("ESP32TempClient")) {
+      Serial.println("✅ Connected!");
+    } else {
+      Serial.print("❌ Failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" Retrying in 5s...");
+      delay(5000);
+    }
+  }
+}
+
+void setup() {
   Serial.begin(9600);
-  Serial.println("Dallas Temperature IC Control Library Demo");
-
-  pinMode(LED_PIN, OUTPUT);
-
+  setup_wifi();
+  client.setServer(mqtt_server, mqtt_port);
   sensors.begin();
 }
 
-void loop()
-{ 
-  sensors.requestTemperatures(); // Send the command to get temperatures
+void loop() {
+  if (!client.connected()) reconnect();
+  client.loop();
+
+  sensors.requestTemperatures();
   float tempC = sensors.getTempCByIndex(0);
 
-  if(tempC != DEVICE_DISCONNECTED_C) {
-    Serial.print("Temperatura: ");
-    Serial.println(tempC);
+  if (tempC != DEVICE_DISCONNECTED_C) {
+    char payload[50];
+    snprintf(payload, sizeof(payload), "{\"temperature\":%.2f}", tempC);
 
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Temp. atual:");
-    lcd.setCursor(0,1);
-    lcd.print(tempC);
-    lcd.print(" C");
+    Serial.print("Publishing: ");
+    Serial.println(payload);
+
+    client.publish(mqtt_topic, payload);
   } else {
-    Serial.println("Error: Could not read temperature data");
+    Serial.println("Error: Could not read temperature");
   }
 
-  if(tempC > 25) {
-    digitalWrite(LED_PIN, HIGH);
-  } else {
-    digitalWrite(LED_PIN, LOW);
-  }
-
-  delay(1000);
+  delay(5000); // 5 seconds
 }
