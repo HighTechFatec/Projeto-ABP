@@ -35,33 +35,37 @@ export const userController = {
     }
   },
 
-  async createUser(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { nome, email, senha, id_laboratorio, telefone }: CreateUserRequest =
-        req.body;
+ async createUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const { nome, email, senha, sigla_laboratorio, telefone }: CreateUserRequest = req.body;
 
-      if (!nome || !email || !senha || !id_laboratorio)
-        throw new AppError("Todos os campos são obrigatórios", 400);
-
-      const existingUser = await Modelusuario.findByEmail(email);
-      if (existingUser) throw new AppError("Email já está cadastrado", 409);
-
-      const newUser = await Modelusuario.create({
-        nome,
-        email,
-        senha,
-        id_laboratorio,
-        telefone
-      });
-      res.status(201).json(newUser);
-    } catch (error) {
-      next(error);
+    // Verifica campos obrigatórios
+    if (!nome || !email || !senha || !sigla_laboratorio) {
+      throw new AppError("Todos os campos são obrigatórios", 400);
     }
-  },
+
+    // Verifica se o email já existe
+    const existingUser = await Modelusuario.findByEmail(email);
+    if (existingUser) throw new AppError("Email já está cadastrado", 409);
+
+    // Cria o usuário (o Modelusuario.create já vai resolver o id do laboratório)
+    const newUser = await Modelusuario.create({
+      nome,
+      email,
+      senha,
+      telefone,
+      sigla_laboratorio, // envia a sigla para o model
+    });
+
+    res.status(201).json(newUser);
+  } catch (error) {
+    next(error);
+  }
+},
 
   async updateUser(
     req: Request,

@@ -13,7 +13,7 @@ export async function initializeDatabase(): Promise<void> {
         id SERIAL PRIMARY KEY,
         nome VARCHAR(50) NOT NULL,
         email VARCHAR(100) UNIQUE,
-        senha VARCHAR(50),
+        senha VARCHAR(250),
         telefone VARCHAR(12),
         id_laboratorio INT,
         FOREIGN KEY(id_laboratorio) REFERENCES laboratorio(id)
