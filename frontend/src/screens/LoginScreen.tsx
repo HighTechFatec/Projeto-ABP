@@ -1,5 +1,20 @@
+<<<<<<< HEAD
 import React, {useState} from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, BackHandler, Alert, useWindowDimensions, ActivityIndicator } from "react-native";
+=======
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  BackHandler,
+  Alert,
+  useWindowDimensions,
+} from "react-native";
+>>>>>>> 933a491996e4bc20a5d56b67da39935b11480934
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
@@ -10,6 +25,7 @@ type LoginScreenProp = NativeStackNavigationProp<RootStackParamList, "Login">;
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginScreenProp>();
+<<<<<<< HEAD
   const { signIn, loading: authLoading } = useAuth();
   const { width } = useWindowDimensions();
   const [email, setEmail] = useState("");
@@ -33,14 +49,33 @@ const LoginScreen: React.FC = () => {
       setLoading(false);
     }
   };
+=======
+  const { width } = useWindowDimensions();
+>>>>>>> 933a491996e4bc20a5d56b67da39935b11480934
 
-const styles = StyleSheet.create({
+  // Estados para login e mensagens
+  const [usuario, setUsuario] = useState("");
+  const [senha, setSenha] = useState("");
+  const [mensagem, setMensagem] = useState<string | null>(null);
+
+  const handleLogin = () => {
+    // Simulação de verificação simples
+    if (usuario === "admin" && senha === "123") {
+      setMensagem("✅ Usuário logado!");
+      // Aqui você pode navegar para outra tela:
+      setTimeout(() => navigation.navigate("App"), 1000);
+    } else {
+      setMensagem("❌ Erro ao fazer login. Verifique suas credenciais.");
+    }
+  };
+
+  const styles = StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: colors.background,
-      padding: width < 400 ? 10 : 20, // padding menor em telas pequenas
+      padding: width < 400 ? 10 : 20,
     },
     logo: {
       width: width < 400 ? 80 : 100,
@@ -75,6 +110,13 @@ const styles = StyleSheet.create({
       fontSize: width < 400 ? 16 : 18,
       fontWeight: "bold",
     },
+    mensagem: {
+      color: mensagem?.includes("Erro") ? "red" : "green",
+      marginBottom: 10,
+      fontSize: 16,
+      fontWeight: "500",
+      textAlign: "center",
+    },
     link: {
       color: colors.primary,
       fontSize: width < 400 ? 14 : 16,
@@ -102,16 +144,22 @@ const styles = StyleSheet.create({
         style={styles.input}
         placeholder="E-mail"
         placeholderTextColor={colors.text}
+<<<<<<< HEAD
         keyboardType="email-address"
         autoCapitalize="none"
         value={email}
         onChangeText={setEmail}
+=======
+        value={usuario}
+        onChangeText={setUsuario}
+>>>>>>> 933a491996e4bc20a5d56b67da39935b11480934
       />
       <TextInput
         style={styles.input}
         placeholder="Senha"
         secureTextEntry
         placeholderTextColor={colors.text}
+<<<<<<< HEAD
         value="{senha}"
         onChangeText={setSenha}
       />
@@ -131,16 +179,26 @@ const styles = StyleSheet.create({
 
 
       <TouchableOpacity onPress={() => navigation.navigate("App")} style={styles.button} activeOpacity={0.8}>
+=======
+        value={senha}
+        onChangeText={setSenha}
+      />
+
+      {/* Mensagem de login */}
+      {mensagem && <Text style={styles.mensagem}>{mensagem}</Text>}
+
+      <TouchableOpacity onPress={handleLogin} style={styles.button} activeOpacity={0.8}>
+>>>>>>> 933a491996e4bc20a5d56b67da39935b11480934
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 
-       {/* Novo botão para cadastro */}
       <TouchableOpacity
         onPress={() => navigation.navigate("Register")}
         activeOpacity={0.8}
       >
         <Text style={styles.registerLink}>
-          Ainda não possui conta? <Text style={styles.registerHighlight}>Cadastre-se</Text>
+          Ainda não possui conta?{" "}
+          <Text style={styles.registerHighlight}>Cadastre-se</Text>
         </Text>
       </TouchableOpacity>
 
@@ -172,4 +230,3 @@ const styles = StyleSheet.create({
 };
 
 export default LoginScreen;
-

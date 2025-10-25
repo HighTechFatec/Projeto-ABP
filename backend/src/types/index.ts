@@ -27,7 +27,8 @@ export interface CreateUserRequest{
     email:string;
     senha:string;
     telefone:string;
-    id_laboratorio:number
+    id_laboratorio?:number;
+    sigla_laboratorio:string
 }
 export interface UpdateRequest{
     nome?:string;

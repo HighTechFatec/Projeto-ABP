@@ -1,27 +1,132 @@
-import React from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "react-native";
+import React, { useState } from "react";
+import {View,Text,TextInput,StyleSheet,TouchableOpacity,Image,Alert,} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import colors from "../theme/colors";
 
-type RegisterScreenProp = NativeStackNavigationProp<RootStackParamList, "Register">;
+type RegisterScreenProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "Register"
+>;
 
 const RegisterScreen: React.FC = () => {
   const navigation = useNavigation<RegisterScreenProp>();
+
+  // Estados para os campos do formulário
+  const [nome, setNome] = useState("");
+  const [laboratorio, setLaboratorio] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+
+  // Função para validar senha
+  const validarSenha = () => {
+    if (senha !== confirmarSenha) {
+      Alert.alert("Erro", "As senhas não coincidem");
+      return false;
+    }
+    return true;
+  };
+
+  // Função para enviar requisição ao backend
+  const handleRegister = async () => {
+  if (!nome || !laboratorio || !email || !senha) {
+    Alert.alert("Erro", "Todos os campos obrigatórios devem ser preenchidos");
+    return;
+  }
+
+  if (!validarSenha()) return;
+
+  try {
+    const response = await fetch("http://localhost:3000/api/usuario", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        nome,
+        email,
+        senha,
+        telefone,
+        sigla_laboratorio: laboratorio, // envia a sigla
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      Alert.alert("Erro", data.message || "Erro ao criar usuário");
+      return;
+    }
+
+    Alert.alert("Sucesso", "Usuário criado com sucesso!", [
+      { text: "OK", onPress: () => navigation.goBack() },
+    ]);
+  } catch (error) {
+    console.error(error);
+    Alert.alert("Erro", "Não foi possível conectar ao servidor");
+  }
+};
+
 
   return (
     <View style={styles.container}>
       <Image source={require("../assets/favicon.png")} style={styles.logo} />
       <Text style={styles.title}>LabTemp IoT</Text>
 
-      <TextInput style={styles.input} placeholder="Nome usuário" placeholderTextColor={colors.text} />
-      <TextInput style={styles.input} placeholder="Laboratório" placeholderTextColor={colors.text} />
-      <TextInput style={styles.input} placeholder="Celular" placeholderTextColor={colors.text} keyboardType="phone-pad" />
-      <TextInput style={styles.input} placeholder="E-mail" placeholderTextColor={colors.text} keyboardType="email-address" />
-      <TextInput style={styles.input} placeholder="Senha" placeholderTextColor={colors.text} secureTextEntry />
+      <TextInput
+        style={styles.input}
+        placeholder="Nome usuário"
+        placeholderTextColor={colors.text}
+        value={nome}
+        onChangeText={setNome}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Laboratório"
+        placeholderTextColor={colors.text}
+        keyboardType="numeric"
+        value={laboratorio}
+        onChangeText={setLaboratorio}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Celular"
+        placeholderTextColor={colors.text}
+        keyboardType="phone-pad"
+        value={telefone}
+        onChangeText={setTelefone}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="E-mail"
+        placeholderTextColor={colors.text}
+        keyboardType="email-address"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Senha"
+        placeholderTextColor={colors.text}
+        secureTextEntry
+        value={senha}
+        onChangeText={setSenha}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirmar senha"
+        placeholderTextColor={colors.text}
+        secureTextEntry
+        value={confirmarSenha}
+        onChangeText={setConfirmarSenha}
+      />
 
-      <TouchableOpacity style={styles.button} activeOpacity={0.8}>
+      <TouchableOpacity
+        style={styles.button}
+        activeOpacity={0.8}
+        onPress={handleRegister}
+      >
         <Text style={styles.buttonText}>Salvar</Text>
       </TouchableOpacity>
 
@@ -78,6 +183,6 @@ const styles = StyleSheet.create({
   link: {
     color: colors.primary,
     fontSize: 16,
-    paddingTop: 10
+    paddingTop: 10,
   },
 });
