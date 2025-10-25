@@ -47,7 +47,7 @@ export interface UpdateAvisoRequest{
 }
 export interface DatabaseConfig {
   host: string;
-  port: number;
+  port: number | string;
   database: string;
   user: string;
   password: string;
@@ -78,4 +78,15 @@ export interface UpdateAmostraRequest {
   data_fim?: Date;
   temp_min?: number;
   temp_max?: number;
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+      };
+    }
+  }
 }

@@ -1,16 +1,38 @@
-import React from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, BackHandler, Alert, useWindowDimensions } from "react-native";
+import React, {useState} from "react";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, BackHandler, Alert, useWindowDimensions, ActivityIndicator } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import colors from "../theme/colors";
+import { useAuth } from "../contexts/AuthContext";
 
 type LoginScreenProp = NativeStackNavigationProp<RootStackParamList, "Login">;
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginScreenProp>();
-  
-const { width } = useWindowDimensions();
+  const { signIn, loading: authLoading } = useAuth();
+  const { width } = useWindowDimensions();
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !senha) {
+      Alert.alert("Erro", "Por favor, preencha todos os campos.");
+      return;
+    }
+     try {
+      setLoading(true);
+      await signIn(email, senha);
+      Alert.alert("Sucesso", "Login realizado com sucesso!");
+      navigation.replace("App");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Erro", "Falha ao realizar login. Verifique suas credenciais.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 const styles = StyleSheet.create({
     container: {
@@ -78,15 +100,35 @@ const styles = StyleSheet.create({
 
       <TextInput
         style={styles.input}
-        placeholder="Nome usuário"
+        placeholder="E-mail"
         placeholderTextColor={colors.text}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        value={email}
+        onChangeText={setEmail}
       />
       <TextInput
         style={styles.input}
         placeholder="Senha"
         secureTextEntry
         placeholderTextColor={colors.text}
+        value="{senha}"
+        onChangeText={setSenha}
       />
+
+      <TouchableOpacity
+        onPress={handleLogin}
+        style={styles.button}
+        activeOpacity={0.8}
+        disabled={loading || authLoading}>
+        {loading || authLoading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Entrar</Text>
+        )}
+      </TouchableOpacity>
+      {/* USAR ESSE CÓDIGO QUANDO TIVER O LOGIN DE TESTE PRONTO */}
+
 
       <TouchableOpacity onPress={() => navigation.navigate("App")} style={styles.button} activeOpacity={0.8}>
         <Text style={styles.buttonText}>Entrar</Text>

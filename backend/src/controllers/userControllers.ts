@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import { CreateUserRequest, UpdateRequest } from "../types";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { jwtConfig } from "../config/auth";
 import Modelusuario from "../model/Usuario";
 import { AppError } from "../utils/AppError";
 
@@ -50,14 +53,19 @@ export const userController = {
       const existingUser = await Modelusuario.findByEmail(email);
       if (existingUser) throw new AppError("Email já está cadastrado", 409);
 
+      const senhaHash = await bcrypt.hash(senha, 10);//criptografa a senha antes de salvar
+
       const newUser = await Modelusuario.create({
         nome,
         email,
-        senha,
+        senha: senhaHash,
         id_laboratorio,
         telefone
       });
-      res.status(201).json(newUser);
+      res.status(201).json({
+        mensage: "Usuário criado com sucesso",
+        user: { id: newUser.id, nome: newUser.nome, email: newUser.email, id_laboratorio: newUser.id_laboratorio, telefone: newUser.telefone }
+      });
     } catch (error) {
       next(error);
     }
@@ -75,6 +83,9 @@ export const userController = {
       const userData: UpdateRequest = req.body;
       if (Object.keys(userData).length === 0)
         throw new AppError("Nenhum dado fornecido para atualização", 400);
+      if (userData.senha) {
+        userData.senha = await bcrypt.hash(userData.senha, 10);
+      }
 
       const updatedUser = await Modelusuario.update(id, userData);
       if (!updatedUser) throw new AppError("Usuário não encontrado", 404);
@@ -117,11 +128,17 @@ export const userController = {
         throw new AppError("Email e senha são obrigatórios", 400);
 
       const user = await Modelusuario.findByEmail(email);
-      if (!user || user.senha !== senha)
-        throw new AppError("E-mail ou senha incorretos", 401);
+      if (!user) throw new AppError("E-mail ou senha incorretos", 401);
+      
+      const token = jwt.sign(
+        { id: user.id, email: user.email },
+        jwtConfig.secret as jwt.Secret,
+        { expiresIn: jwtConfig.expiresIn as jwt.SignOptions["expiresIn"] }
+      );
 
-      res.status(200).json({ message: "Login bem-sucedido", user });
-    } catch (error) {
+      res.status(200).json({ message: "Login bem-sucedido", token, user: { id: user.id, nome: user.nome, email: user.email, id_laboratorio: user.id_laboratorio, telefone: user.telefone } 
+      });
+  }  catch (error) {
       next(error);
     }
   },

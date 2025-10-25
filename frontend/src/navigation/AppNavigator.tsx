@@ -1,9 +1,13 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from "@react-navigation/drawer";
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
+import { useAuth } from "../contexts/AuthContext";
 import colors from "../theme/colors";
 import "react-native-gesture-handler";
+import { Alert, TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import type { DrawerContentComponentProps } from "@react-navigation/drawer";
 
 // Importando telas
 import WelcomeScreen from "../screens/WelcomeScreen";
@@ -16,7 +20,7 @@ import SampleScreen from "../screens/SampleScreen";
 import NotificationScreen from "../screens/NotificationScreen";
 import NewSampleScreen from "../screens/NewSampleScreen";
 import HistoricoScreen from "../screens/HistoryScreen";
-import { Alert, TouchableOpacity, View, Text, StyleSheet } from "react-native";
+import { ActivityIndicator } from "react-native-paper";
 
 // Definição dos tipos de rotas
 export type RootStackParamList = {
@@ -35,17 +39,12 @@ export type RootStackParamList = {
   App: undefined;
 };
 
-// Stack principal (para login e registro)
+//configuração dos navegadores
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
-// Drawer Navigator (para as telas internas)
 const Drawer = createDrawerNavigator<RootStackParamList>();
 
-// 🔹 Drawer customizado com botão de logout
-import type { DrawerContentComponentProps } from "@react-navigation/drawer";
-import { MaterialIcons } from "@expo/vector-icons";
-
 function CustomDrawerContent(props: DrawerContentComponentProps) {
+  const {signOut} = useAuth();
   const handleLogout = () => {
     Alert.alert(
       "Sair",
@@ -55,7 +54,8 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
         {
           text: "Sair",
           style: "destructive",
-          onPress: () => {
+          onPress: async () => {
+            await signOut();
             props.navigation.reset({
               index: 0,
               routes: [{ name: "Login" }],
@@ -113,11 +113,31 @@ function DrawerNavigator() {
   );
 }
 
+//stack de autenticação antes do login
+function AuthStack() {
+  return(
+    <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Welcome">
+      <Stack.Screen name="Welcome" component={WelcomeScreen} />
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+    </Stack.Navigator>
+  );
+}
+
 // Navegação geral
 const AppNavigator: React.FC = () => {
+  const {user, loading} = useAuth()
+  if (loading){
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size = "large" color={colors.primary} />
+      </View>
+    );
+  }
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
+      {user ? <DrawerNavigator /> : <AuthStack />}
+      {/* <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
@@ -129,7 +149,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen name="Sample" component={SampleScreen} />
         <Stack.Screen name="Notifications" component={NotificationScreen} />
         <Stack.Screen name="App" component={DrawerNavigator} />
-      </Stack.Navigator>
+      </Stack.Navigator> */}
     </NavigationContainer>
   );
 };
@@ -156,5 +176,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000", // pode trocar pela cor do tema
   },
 });
