@@ -12,6 +12,8 @@ interface User {
   id: number;
   nome: string;
   email: string;
+  telefone: string;
+  id_laboratorio: number;
 }
 
 interface AuthContextData {
@@ -20,6 +22,7 @@ interface AuthContextData {
   loading: boolean;
   signIn(email: string, senha: string): Promise<void>;
   signOut(): Promise<void>;
+  updateUser(data: Partial<User>): Promise<any>;
 }
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
@@ -51,6 +54,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     loadStorageData();
   }, []);
 
+  async function updateUser(data: Partial<User>) {
+    if (!user) return;
+
+    try {
+      const response = await api.put(`/api/usuario/${user.id}`, data);
+
+      const updatedUser = response.data;
+
+      await AsyncStorage.setItem("@user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+
+      return updatedUser;
+    } catch (error) {
+      console.error("Erro ao atualizar usuário:", error);
+      throw new Error("Erro ao salvar alterações");
+    }
+  }
+
   async function signIn(email: string, senha: string) {
     try {
       const response = await api.post("/api/usuario/login", { email, senha });
@@ -75,7 +96,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     delete api.defaults.headers.common["Authorization"];
   }
   return (
-    <AuthContext.Provider value={{ user, token, loading, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, token, loading, signIn, signOut, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
