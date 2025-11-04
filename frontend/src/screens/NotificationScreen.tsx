@@ -25,7 +25,7 @@ export default function NotificationScreen() {
   const [filteredAvisos, setFilteredAvisos] = useState<Aviso[]>([]);
 
   // 🛰️ IP local da sua máquina (substitua localhost se for emulador/celular físico)
-  const API_URL = "http://10.68.55.224:3000/avisos"; // altere para seu IP real
+  const API_URL = "http://192.168.0.104:3000/avisos"; // altere para seu IP real
 
   // 🔹 Buscar todos os avisos do backend
   const fetchAvisos = async () => {

@@ -33,8 +33,22 @@ export async function initializeDatabase(): Promise<void> {
         temp_max DECIMAL(4,2),
         id_usuario INT,
         FOREIGN KEY(id_usuario) REFERENCES usuario(id)
-      )
+      );
+
+      CREATE TABLE IF NOT EXISTS amostras (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    laboratorio VARCHAR(50) NOT NULL,       -- nova coluna
+    data_inicio TIMESTAMP NOT NULL,
+    data_fim TIMESTAMP NOT NULL,
+    temp_min DECIMAL(4,2) NOT NULL,
+    temp_max DECIMAL(4,2) NOT NULL,
+    unidade CHAR(1) NOT NULL DEFAULT 'C',   -- nova coluna
+    id_usuario INT NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+);
     `);
+
 
     // ✅ Inserir laboratórios de exemplo
     await database.query(`

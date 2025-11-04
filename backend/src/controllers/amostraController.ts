@@ -29,7 +29,7 @@ export const amostraController = {
 
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { nome, data_inicio, data_fim, temp_min, temp_max, id_usuario }: CreateAmostraRequest = req.body;
+      const { nome, laboratorio, data_inicio, data_fim, temp_min, temp_max, unidade, id_usuario }: CreateAmostraRequest = req.body;
 
       if (!nome || !data_inicio || !data_fim || temp_min == null || temp_max == null)
         throw new AppError('Todos os campos são obrigatórios', 400);
@@ -41,7 +41,14 @@ export const amostraController = {
         throw new AppError('Data de início deve ser anterior à data de fim', 400);
 
       const newAmostra = await ModelAmostra.create({
-        nome, data_inicio, data_fim, temp_min, temp_max, id_usuario
+        nome,
+        laboratorio,
+        data_inicio,
+        data_fim,
+        temp_min,
+        temp_max,
+        unidade,
+        id_usuario
       });
 
       res.status(201).json({

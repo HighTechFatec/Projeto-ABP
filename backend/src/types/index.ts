@@ -66,10 +66,12 @@ export interface Amostra {
 
 export interface CreateAmostraRequest {
   nome: string;
-  data_inicio: Date;
-  data_fim: Date;
+  laboratorio: string;
+  data_inicio: string;
+  data_fim: string;
   temp_min: number;
   temp_max: number;
+  unidade: "C" | "F" | "K";
   id_usuario: number;
 }
 

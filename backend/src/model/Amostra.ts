@@ -13,16 +13,17 @@ export class ModelAmostra {
   }
 
   async create(amostraData: CreateAmostraRequest): Promise<Amostra> {
-    const { nome, data_inicio, data_fim, temp_min, temp_max, id_usuario } = amostraData;
+    const { nome, laboratorio, data_inicio, data_fim, temp_min, temp_max, unidade, id_usuario } = amostraData;
+
     const result = await database.query(
-      `INSERT INTO amostras (nome, data_inicio, data_fim, temp_min, temp_max, id_usuario)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *`,
-      [nome, data_inicio, data_fim, temp_min, temp_max, id_usuario]
+      `INSERT INTO amostras (nome, laboratorio, data_inicio, data_fim, temp_min, temp_max, unidade, id_usuario)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+     RETURNING *`,
+      [nome, laboratorio, data_inicio, data_fim, temp_min, temp_max, unidade, id_usuario]
     );
+
     return result.rows[0];
   }
-
   async update(id: number, amostraData: UpdateAmostraRequest): Promise<Amostra | null> {
     const fields: string[] = [];
     const values: any[] = [];

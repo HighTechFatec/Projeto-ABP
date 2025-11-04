@@ -1,9 +1,51 @@
-import React from "react";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../theme/colors";
+import api from "../services/api";
+
+interface Amostra {
+  id: number;
+  nome: string;
+  temp_max: number;
+  temp_min: number;
+  data_inicio: string;
+  data_fim: string;
+}
 
 export default function AmostrasScreen({ navigation }: any) {
+  const [amostras, setAmostras] = useState<Amostra[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+
+  const fetchAmostras = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("/amostras");
+      setAmostras(response.data);
+    } catch (error) {
+      console.log("Erro ao buscar amostras:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAmostras();
+  }, []);
+
+  const filteredAmostras = amostras.filter((a) =>
+    a.nome.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <View style={styles.container}>
       {/* Barra de busca */}
@@ -13,19 +55,28 @@ export default function AmostrasScreen({ navigation }: any) {
           placeholder="Buscar amostras..."
           placeholderTextColor="#DBD7DF"
           style={styles.searchInput}
+          value={search}
+          onChangeText={setSearch}
         />
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Card de amostra */}
-        <View style={styles.cardAmostra}>
-          <Ionicons name="thermometer-outline" size={40} color="#00EBC7" />
-          <View style={{ marginLeft: 10 }}>
-            <Text style={styles.cardTitle}>Amostra Bac-16/09/25</Text>
-            <Text style={styles.cardSubtitle}>Última leitura: 26°C</Text>
-          </View>
-        </View>
-      </ScrollView>
+      {loading ? (
+        <ActivityIndicator size="large" color="#00EBC7" style={{ marginTop: 20 }} />
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {filteredAmostras.map((amostra) => (
+            <View key={amostra.id} style={styles.cardAmostra}>
+              <Ionicons name="thermometer-outline" size={40} color="#00EBC7" />
+              <View style={{ marginLeft: 10 }}>
+                <Text style={styles.cardTitle}>{amostra.nome}</Text>
+                <Text style={styles.cardSubtitle}>
+                  Última leitura: {amostra.temp_max}°C
+                </Text>
+              </View>
+            </View>
+          ))}
+        </ScrollView>
+      )}
 
       {/* Botão Nova Amostra */}
       <TouchableOpacity
@@ -44,17 +95,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#202123",
     padding: 15,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  headerText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#DBD7DF",
   },
   searchBox: {
     flexDirection: "row",
@@ -87,32 +127,6 @@ const styles = StyleSheet.create({
     color: "#DBD7DF",
     fontSize: 14,
   },
-  cardNotificacao: {
-    backgroundColor: "#343541",
-    borderRadius: 10,
-    marginBottom: 15,
-    overflow: "hidden",
-  },
-  cardImage: {
-    width: "100%",
-    height: 120,
-    resizeMode: "contain",
-    backgroundColor: "#202123",
-  },
-  cardNotificacaoTitle: {
-    color: "#2CB67D",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  cardNotificacaoSubtitle: {
-    color: "#DBD7DF",
-    fontSize: 14,
-    marginBottom: 5,
-  },
-  cardNotificacaoText: {
-    color: "#DBD7DF",
-    fontSize: 13,
-  },
   newSampleButton: {
     flexDirection: "row",
     backgroundColor: "#00EBC7",
@@ -128,9 +142,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
-  backButton: {
-    paddingVertical: 20,
-    color: colors.primary,
-    alignSelf: "center"
-  }
 });
