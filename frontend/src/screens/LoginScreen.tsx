@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-import React, {useState} from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, BackHandler, Alert, useWindowDimensions, ActivityIndicator } from "react-native";
-=======
 import React, { useState } from "react";
 import {
   View,
@@ -14,7 +10,6 @@ import {
   Alert,
   useWindowDimensions,
 } from "react-native";
->>>>>>> 933a491996e4bc20a5d56b67da39935b11480934
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
@@ -25,33 +20,7 @@ type LoginScreenProp = NativeStackNavigationProp<RootStackParamList, "Login">;
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginScreenProp>();
-<<<<<<< HEAD
-  const { signIn, loading: authLoading } = useAuth();
   const { width } = useWindowDimensions();
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleLogin = async () => {
-    if (!email || !senha) {
-      Alert.alert("Erro", "Por favor, preencha todos os campos.");
-      return;
-    }
-     try {
-      setLoading(true);
-      await signIn(email, senha);
-      Alert.alert("Sucesso", "Login realizado com sucesso!");
-      navigation.replace("App");
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Erro", "Falha ao realizar login. Verifique suas credenciais.");
-    } finally {
-      setLoading(false);
-    }
-  };
-=======
-  const { width } = useWindowDimensions();
->>>>>>> 933a491996e4bc20a5d56b67da39935b11480934
 
   // Estados para login e mensagens
   const [usuario, setUsuario] = useState("");
@@ -144,42 +113,14 @@ const LoginScreen: React.FC = () => {
         style={styles.input}
         placeholder="E-mail"
         placeholderTextColor={colors.text}
-<<<<<<< HEAD
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-=======
         value={usuario}
         onChangeText={setUsuario}
->>>>>>> 933a491996e4bc20a5d56b67da39935b11480934
       />
       <TextInput
         style={styles.input}
         placeholder="Senha"
         secureTextEntry
         placeholderTextColor={colors.text}
-<<<<<<< HEAD
-        value="{senha}"
-        onChangeText={setSenha}
-      />
-
-      <TouchableOpacity
-        onPress={handleLogin}
-        style={styles.button}
-        activeOpacity={0.8}
-        disabled={loading || authLoading}>
-        {loading || authLoading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Entrar</Text>
-        )}
-      </TouchableOpacity>
-      {/* USAR ESSE CÓDIGO QUANDO TIVER O LOGIN DE TESTE PRONTO */}
-
-
-      <TouchableOpacity onPress={() => navigation.navigate("App")} style={styles.button} activeOpacity={0.8}>
-=======
         value={senha}
         onChangeText={setSenha}
       />
@@ -188,7 +129,6 @@ const LoginScreen: React.FC = () => {
       {mensagem && <Text style={styles.mensagem}>{mensagem}</Text>}
 
       <TouchableOpacity onPress={handleLogin} style={styles.button} activeOpacity={0.8}>
->>>>>>> 933a491996e4bc20a5d56b67da39935b11480934
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
 

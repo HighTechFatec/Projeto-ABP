@@ -46,33 +46,9 @@ export const userController = {
   try {
     const { nome, email, senha, sigla_laboratorio, telefone }: CreateUserRequest = req.body;
 
-<<<<<<< HEAD
-      if (!nome || !email || !senha || !id_laboratorio)
-        throw new AppError("Todos os campos são obrigatórios", 400);
-
-      const existingUser = await Modelusuario.findByEmail(email);
-      if (existingUser) throw new AppError("Email já está cadastrado", 409);
-
-      const senhaHash = await bcrypt.hash(senha, 10);//criptografa a senha antes de salvar
-
-      const newUser = await Modelusuario.create({
-        nome,
-        email,
-        senha: senhaHash,
-        id_laboratorio,
-        telefone
-      });
-      res.status(201).json({
-        mensage: "Usuário criado com sucesso",
-        user: { id: newUser.id, nome: newUser.nome, email: newUser.email, id_laboratorio: newUser.id_laboratorio, telefone: newUser.telefone }
-      });
-    } catch (error) {
-      next(error);
-=======
     // Verifica campos obrigatórios
     if (!nome || !email || !senha || !sigla_laboratorio) {
       throw new AppError("Todos os campos são obrigatórios", 400);
->>>>>>> 933a491996e4bc20a5d56b67da39935b11480934
     }
 
     // Verifica se o email já existe

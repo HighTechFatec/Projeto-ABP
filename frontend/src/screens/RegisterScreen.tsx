@@ -40,7 +40,7 @@ const RegisterScreen: React.FC = () => {
   if (!validarSenha()) return;
 
   try {
-    const response = await fetch("http://localhost:3000/api/usuario", {
+    const response = await fetch("http://10.68.55.240:3000/api/usuario", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

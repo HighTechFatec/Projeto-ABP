@@ -137,19 +137,6 @@ const AppNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       {user ? <DrawerNavigator /> : <AuthStack />}
-      {/* <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
-        <Stack.Screen name="Welcome" component={WelcomeScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="MyAccount" component={MyAccountScreen} />
-        <Stack.Screen name="Graphs" component={DataGraphicScreen} />
-        <Stack.Screen name="History" component={HistoricoScreen} />
-        <Stack.Screen name="NewSample" component={NewSampleScreen} />
-        <Stack.Screen name="Sample" component={SampleScreen} />
-        <Stack.Screen name="Notifications" component={NotificationScreen} />
-        <Stack.Screen name="App" component={DrawerNavigator} />
-      </Stack.Navigator> */}
     </NavigationContainer>
   );
 };
