@@ -85,7 +85,6 @@ const RegisterScreen: React.FC = () => {
         style={styles.input}
         placeholder="Laboratório"
         placeholderTextColor={colors.text}
-        keyboardType="numeric"
         value={laboratorio}
         onChangeText={setLaboratorio}
       />
