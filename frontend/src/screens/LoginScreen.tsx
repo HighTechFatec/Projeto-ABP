@@ -39,10 +39,6 @@ const LoginScreen: React.FC = () => {
     await signIn(usuario, senha);
     setMensagem("✅ Login realizado com sucesso!");
 
-    setTimeout(() => {
-      navigation.navigate("App"); // ou a sua rota principal
-    }, 500);
-
   } catch (error: any) {
     setMensagem("❌ " + (error.message || "Erro ao fazer login"));
   }

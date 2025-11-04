@@ -56,10 +56,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           style: "destructive",
           onPress: async () => {
             await signOut();
-            props.navigation.reset({
-              index: 0,
-              routes: [{ name: "Login" }],
-            });
           },
         },
       ]
