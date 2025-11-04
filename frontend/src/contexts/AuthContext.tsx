@@ -53,7 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   async function signIn(email: string, senha: string) {
     try {
-      const response = await api.post("/login", { email, senha });
+      const response = await api.post("/api/usuario/login", { email, senha });
       const { token, user } = response.data;
 
       await AsyncStorage.setItem("@token", token);

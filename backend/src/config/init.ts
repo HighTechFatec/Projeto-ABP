@@ -36,6 +36,16 @@ export async function initializeDatabase(): Promise<void> {
       )
     `);
 
+    // ✅ Inserir laboratórios de exemplo
+    await database.query(`
+      INSERT INTO laboratorio (sigla, nome)
+      VALUES 
+        ('LAB01', 'Laboratório de Química'),
+        ('LAB02', 'Laboratório de Biologia'),
+        ('LAB03', 'Laboratório de Física')
+      ON CONFLICT (sigla) DO NOTHING;
+    `);
+
     console.log('📁 Tabelas verificadas/criadas com sucesso!');
   } catch (error) {
     console.error('❌ Erro ao criar tabela(s):', error);

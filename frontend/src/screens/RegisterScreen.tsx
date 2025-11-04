@@ -83,7 +83,7 @@ const RegisterScreen: React.FC = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Laboratório"
+        placeholder="Sigla do Laboratório"
         placeholderTextColor={colors.text}
         value={laboratorio}
         onChangeText={setLaboratorio}

@@ -22,21 +22,31 @@ const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginScreenProp>();
   const { width } = useWindowDimensions();
 
+  const { signIn } = useAuth();
+
   // Estados para login e mensagens
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
   const [mensagem, setMensagem] = useState<string | null>(null);
 
-  const handleLogin = () => {
-    // Simulação de verificação simples
-    if (usuario === "admin" && senha === "123") {
-      setMensagem("✅ Usuário logado!");
-      // Aqui você pode navegar para outra tela:
-      setTimeout(() => navigation.navigate("App"), 1000);
-    } else {
-      setMensagem("❌ Erro ao fazer login. Verifique suas credenciais.");
-    }
-  };
+  const handleLogin = async () => {
+  if (!usuario || !senha) {
+    setMensagem("❌ Preencha usuário e senha!");
+    return;
+  }
+
+  try {
+    await signIn(usuario, senha);
+    setMensagem("✅ Login realizado com sucesso!");
+
+    setTimeout(() => {
+      navigation.navigate("App"); // ou a sua rota principal
+    }, 500);
+
+  } catch (error: any) {
+    setMensagem("❌ " + (error.message || "Erro ao fazer login"));
+  }
+};
 
   const styles = StyleSheet.create({
     container: {
