@@ -24,6 +24,7 @@ export class ModelAmostra {
 
     return result.rows[0];
   }
+  
   async update(id: number, amostraData: UpdateAmostraRequest): Promise<Amostra | null> {
     const fields: string[] = [];
     const values: any[] = [];

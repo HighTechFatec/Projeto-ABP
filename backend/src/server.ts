@@ -16,7 +16,7 @@ class Server {
 
   constructor() {
     this.app = express();
-    this.port = parseInt(process.env.PORT || '3000');
+    this.port = parseInt(process.env.PORT || '3011');
     
     this.initializeMiddlewares();
     this.initializeRoutes();
@@ -30,9 +30,9 @@ class Server {
 
   private initializeRoutes(): void {
     this.app.use('/api/usuario', usersRoutes);
-    this.app.use('/dados',dadosRoutes);
-    this.app.use('/avisos',avisoRoutes)
     this.app.use('/amostras', amostraRoutes);
+    this.app.use('/dados',dadosRoutes);
+    this.app.use('/avisos',avisoRoutes);
     
     // this.app.get('/health', (req: Request, res: Response) => {
     //   res.json({ 

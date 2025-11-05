@@ -10,6 +10,8 @@ import {
   Platform,
   ScrollView
 } from "react-native";
+
+
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
@@ -17,7 +19,6 @@ import { useNavigation } from "@react-navigation/native";
 import api from "../services/api";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import axios from "axios";
 
 function formatDate(date: Date) {
   const d = new Date(date);
@@ -38,10 +39,6 @@ export default function AmostraCreateScreen() {
   const [showStartPicker, setShowStartPicker] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
   const [idUsuario, setIdUsuario] = useState(0);
-
-  const api = axios.create({
-  baseURL: "http://192.168.0.10:3011", // seu backend
-});
 
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -66,9 +63,9 @@ export default function AmostraCreateScreen() {
 
     console.log("Payload amostra:", body);
 
-const response = await api.post("/amostras", body);
-    console.log("Resposta backend:", response.data);
-    
+  const response = await api.post("http://10.68.55.240:3011/amostras", body);
+  console.log(response.data);
+      
     Alert.alert("Sucesso", "Amostra criada com sucesso!");
     navigation.goBack();
 
