@@ -7,10 +7,13 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../theme/colors";
 import api from "../services/api";
+import { useFocusEffect } from "@react-navigation/native";
+
 
 interface Amostra {
   id?: number;
@@ -44,85 +47,119 @@ export default function AmostrasScreen({ navigation }: any) {
     }
   };
 
-  useEffect(() => {
-    fetchAmostras();
-  }, []);
+  const handleDeleteAmostra = async (id: number) => {
+    Alert.alert(
+      "Excluir amostra",
+      "Tem certeza que deseja excluir esta amostra?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await api.delete(`/amostras/${id}`);
+              await fetchAmostras();
+            } catch (error) {
+              console.log("Erro ao excluir amostra:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchAmostras();
+    }, [])
+  );
 
   const filteredAmostras = amostras.filter((a) =>
     a.nome.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-  <View style={styles.container}>
-    {/* Barra de busca */}
-    <View style={styles.searchBox}>
-      <Ionicons name="search-outline" size={20} color="#DBD7DF" />
-      <TextInput
-        placeholder="Buscar amostras..."
-        placeholderTextColor="#DBD7DF"
-        style={styles.searchInput}
-        value={search}
-        onChangeText={setSearch}
-      />
-    </View>
-
-    {loading ? (
-      <ActivityIndicator size="large" color="#00EBC7" style={{ marginTop: 20 }} />
-    ) : (
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {filteredAmostras.map((amostra) => (
-          <TouchableOpacity
-            key={amostra.id}
-            style={styles.cardAmostra}
-            onPress={() => {
-              setSelectedAmostra(amostra);
-              setShowModal(true);
-            }}
-          >
-            <Ionicons name="thermometer-outline" size={40} color="#00EBC7" />
-            <View style={{ marginLeft: 10 }}>
-              <Text style={styles.cardTitle}>{amostra.nome}</Text>
-              <Text style={styles.cardSubtitle}>
-                Última leitura: {amostra.temp_max}°C
-              </Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    )}
-
-    {/* ✅ Modal dentro do return */}
-    {showModal && selectedAmostra && (
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalCard}>
-          <Text style={styles.modalTitle}>{selectedAmostra.nome}</Text>
-
-          <Text style={styles.modalItem}>Laboratório: {selectedAmostra.laboratorio}</Text>
-          <Text style={styles.modalItem}>Temp Min: {selectedAmostra.temp_min}°{selectedAmostra.unidade}</Text>
-          <Text style={styles.modalItem}>Temp Max: {selectedAmostra.temp_max}°{selectedAmostra.unidade}</Text>
-          <Text style={styles.modalItem}>Início: {new Date(selectedAmostra.data_inicio).toLocaleString()}</Text>
-          <Text style={styles.modalItem}>Fim: {new Date(selectedAmostra.data_fim).toLocaleString()}</Text>
-
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setShowModal(false)}
-          >
-            <Text style={{ color: "#202123", fontWeight: "bold" }}>Fechar</Text>
-          </TouchableOpacity>
-        </View>
+    <View style={styles.container}>
+      {/* Barra de busca */}
+      <View style={styles.searchBox}>
+        <Ionicons name="search-outline" size={20} color="#DBD7DF" />
+        <TextInput
+          placeholder="Buscar amostras..."
+          placeholderTextColor="#DBD7DF"
+          style={styles.searchInput}
+          value={search}
+          onChangeText={setSearch}
+        />
       </View>
-    )}
 
-    {/* Botão Nova Amostra */}
-    <TouchableOpacity
-      style={styles.newSampleButton}
-      onPress={() => navigation.navigate("NewSample")}
-    >
-      <Ionicons name="add-circle-outline" size={20} color="#202123" />
-      <Text style={styles.newSampleText}>Nova amostra</Text>
-    </TouchableOpacity>
-  </View>
-);
+      {loading ? (
+        <ActivityIndicator size="large" color="#00EBC7" style={{ marginTop: 20 }} />
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {filteredAmostras.map((amostra) => (
+            <View key={amostra.id} style={styles.cardAmostra}>
+              <TouchableOpacity
+                style={{ flexDirection: "row", flex: 1, alignItems: "center" }}
+                onPress={() => {
+                  setSelectedAmostra(amostra);
+                  setShowModal(true);
+                }}
+              >
+                <Ionicons name="thermometer-outline" size={40} color="#00EBC7" />
+                <View style={{ marginLeft: 10 }}>
+                  <Text style={styles.cardTitle}>{amostra.nome}</Text>
+                  <Text style={styles.cardSubtitle}>
+                    Última leitura: {amostra.temp_max}°C
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+              {/* 🔴 Botão de exclusão */}
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => handleDeleteAmostra(amostra.id!)}
+              >
+                <Ionicons name="trash-outline" size={20} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </ScrollView>
+      )}
+
+      {/* ✅ Modal dentro do return */}
+      {showModal && selectedAmostra && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>{selectedAmostra.nome}</Text>
+
+            <Text style={styles.modalItem}>Laboratório: {selectedAmostra.laboratorio}</Text>
+            <Text style={styles.modalItem}>Temp Min: {selectedAmostra.temp_min}°{selectedAmostra.unidade}</Text>
+            <Text style={styles.modalItem}>Temp Max: {selectedAmostra.temp_max}°{selectedAmostra.unidade}</Text>
+            <Text style={styles.modalItem}>Início: {new Date(selectedAmostra.data_inicio).toLocaleString()}</Text>
+            <Text style={styles.modalItem}>Fim: {new Date(selectedAmostra.data_fim).toLocaleString()}</Text>
+
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowModal(false)}
+            >
+              <Text style={{ color: "#202123", fontWeight: "bold" }}>Fechar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {/* Botão Nova Amostra */}
+      <TouchableOpacity
+        style={styles.newSampleButton}
+        onPress={() => navigation.navigate("NewSample")}
+      >
+        <Ionicons name="add-circle-outline" size={20} color="#202123" />
+        <Text style={styles.newSampleText}>Nova amostra</Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -214,5 +251,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     alignItems: "center",
-  }
+  },
+  deleteButton: {
+  backgroundColor: "#FF4C4C",
+  padding: 8,
+  borderRadius: 8,
+  justifyContent: "center",
+  alignItems: "center",
+  marginLeft: 10,
+},
 });
