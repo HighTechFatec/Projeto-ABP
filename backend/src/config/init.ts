@@ -1,4 +1,4 @@
-import database from '../config/database';
+import database from "../config/database";
 
 export async function initializeDatabase(): Promise<void> {
   try {
@@ -35,20 +35,20 @@ export async function initializeDatabase(): Promise<void> {
         FOREIGN KEY(id_usuario) REFERENCES usuario(id)
       );
 
-    CREATE TABLE IF NOT EXISTS amostras (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(100) NOT NULL,
-    laboratorio VARCHAR(50) NOT NULL,     
-    data_inicio TIMESTAMP NOT NULL,
-    data_fim TIMESTAMP NOT NULL,
-    temp_min DECIMAL(4,2) NOT NULL,
-    temp_max DECIMAL(4,2) NOT NULL,
-    unidade CHAR(1) NOT NULL DEFAULT 'C',  
-    id_usuario INT NOT NULL,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id)
-);
+      CREATE TABLE IF NOT EXISTS amostras (
+        id SERIAL PRIMARY KEY,
+        nome VARCHAR(100) NOT NULL,
+        laboratorio VARCHAR(50) NOT NULL,     
+        data_inicio TIMESTAMP NOT NULL,
+        data_fim TIMESTAMP NOT NULL,
+        temp_min DECIMAL(4,2) NOT NULL,
+        temp_max DECIMAL(4,2) NOT NULL,
+        unidade CHAR(1) NOT NULL DEFAULT 'C',  
+        id_usuario INT NOT NULL,
+        FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+      );
     `);
-
+    
 
     // ✅ Inserir laboratórios de exemplo
     await database.query(`

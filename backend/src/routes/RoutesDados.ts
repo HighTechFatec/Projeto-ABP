@@ -7,7 +7,6 @@ const router = Router();
 
 router.get('/',dadosControllers.getAllDados);
 router.get('/:id',dadosControllers.getAllDadosById);
-
 // 🔹 Nova rota para inserção automática dos dados
 router.post('/', async (req: Request, res: Response) => {
   try {
