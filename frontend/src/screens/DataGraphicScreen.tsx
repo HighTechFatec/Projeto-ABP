@@ -5,11 +5,14 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { Menu, Provider } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import ChartCard from "../components/ChartCard";
 import colors from "../theme/colors";
+import api from "../services/api"; // <- seu axios configurado
+import { useFocusEffect } from "@react-navigation/native";
 
 const DataGraphicScreen: React.FC = () => {
   const tempData = [
@@ -29,9 +32,39 @@ const DataGraphicScreen: React.FC = () => {
   const [period, setPeriod] = useState<"dia" | "semana" | "mês">("dia");
   const [chartType, setChartType] = useState<"line" | "bar">("line");
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [dados, setDados] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Buscar dados do backend
+  const fetchDados = async () => {
+  try {
+    const response = await api.get("/dados");
+    const data = response.data;
+
+    // Mapeia os dados para o formato esperado pelo gráfico
+    const formatado = data.map((item: any, index: number) => ({
+      x: index + 1,
+      y: Number(item.temperatura),
+      data: item.data_hora,
+    }));
+
+    setDados(formatado);
+  } catch (error) {
+    console.error("❌ Erro ao buscar dados:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Atualiza quando a tela ganha foco
+useFocusEffect(
+  React.useCallback(() => {
+    fetchDados();
+  }, [])
+);
 
   // Últimos valores
-  const lastTemp = tempData[tempData.length - 1].y;
+const lastTemp = dados.length > 0 ? dados[dados.length - 1].y : "--";
 
   // Trocar tipo de gráfico
   const toggleChartType = () => {
@@ -99,14 +132,19 @@ const DataGraphicScreen: React.FC = () => {
           <Text style={styles.statValue}>{lastTemp}°C</Text>
           <Text style={styles.statLabel}>Temperatura</Text>
         </View>
+
+        {/* Gráficos */}
+        {loading ? (
+  <ActivityIndicator size="large" color={colors.primary} />
+) : (
+  <ChartCard
+    title="Temperatura (°C)"
+    data={dados.length > 0 ? dados : [{ x: 0, y: 0 }]}
+    chartType={chartType}
+  />
+)}
         
-      {/* Gráficos */}
-      <ChartCard
-        title="Temperatura (°C)"
-        data={tempData}
-        chartType={chartType}
-      />
-    </View>
+      </View>
 
       {/* Navegação por datas */}
       <View style={styles.navRow}>
