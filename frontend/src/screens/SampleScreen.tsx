@@ -98,47 +98,82 @@ export default function AmostrasScreen({ navigation }: any) {
         <ActivityIndicator size="large" color="#00EBC7" style={{ marginTop: 20 }} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false}>
-          {filteredAmostras.map((amostra) => (
-            <View key={amostra.id} style={styles.cardAmostra}>
-              <TouchableOpacity
-                style={{ flexDirection: "row", flex: 1, alignItems: "center" }}
-                onPress={() => {
-                  setSelectedAmostra(amostra);
-                  setShowModal(true);
-                }}
-              >
-                <Ionicons name="thermometer-outline" size={40} color="#00EBC7" />
-                <View style={{ marginLeft: 10 }}>
-                  <Text style={styles.cardTitle}>{amostra.nome}</Text>
-                  <Text style={styles.cardSubtitle}>
-                    Última leitura: {amostra.temp_max}°C
-                  </Text>
-                </View>
-              </TouchableOpacity>
+          {amostras.length > 0 ? (
+            (() => {
+              const ultimaAmostra = amostras[amostras.length - 1];
+              return (
+                <View key={ultimaAmostra.id} style={styles.cardAmostraGrande}>
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Ionicons name="flask-outline" size={50} color="#00EBC7" />
+                    <View style={{ marginLeft: 15 }}>
+                      <Text style={styles.cardTitleGrande}>{ultimaAmostra.nome}</Text>
+                      <Text style={styles.cardSubtitleGrande}>
+                        Laboratório: {ultimaAmostra.laboratorio}
+                      </Text>
+                      <Text style={styles.cardSubtitleGrande}>
+                        Temp. Máx: {ultimaAmostra.temp_max}°{ultimaAmostra.unidade}
+                      </Text>
+                    </View>
+                  </View>
 
-              {/* 🔴 Botão de exclusão */}
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleDeleteAmostra(amostra.id!)}
-              >
-                <Ionicons name="trash-outline" size={20} color="#fff" />
-              </TouchableOpacity>
-            </View>
-          ))}
+                  {/* Botões de ação */}
+                  <View style={styles.actionButtonsContainer}>
+                    <TouchableOpacity
+                      style={styles.detailButton}
+                      onPress={() => {
+                        setSelectedAmostra(ultimaAmostra);
+                        setShowModal(true);
+                      }}
+                    >
+                      <Ionicons name="information-circle-outline" size={22} color="#202123" />
+                      <Text style={styles.detailButtonText}>Exibir detalhes</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.deleteButtonGrande}
+                      onPress={() => handleDeleteAmostra(ultimaAmostra.id!)}
+                    >
+                      <Ionicons name="trash-outline" size={22} color="#fff" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              );
+            })()
+          ) : (
+            <Text style={{ color: "#DBD7DF", textAlign: "center", marginTop: 20 }}>
+              Nenhuma amostra registrada.
+            </Text>
+          )}
         </ScrollView>
       )}
 
-      {/* ✅ Modal dentro do return */}
+      {/* ✅ Modal mais bonito */}
       {showModal && selectedAmostra && (
         <View style={styles.modalOverlay}>
           <View style={styles.modalCard}>
+            <Ionicons name="flask-outline" size={50} color="#00EBC7" style={{ alignSelf: "center", marginBottom: 10 }} />
             <Text style={styles.modalTitle}>{selectedAmostra.nome}</Text>
 
-            <Text style={styles.modalItem}>Laboratório: {selectedAmostra.laboratorio}</Text>
-            <Text style={styles.modalItem}>Temp Min: {selectedAmostra.temp_min}°{selectedAmostra.unidade}</Text>
-            <Text style={styles.modalItem}>Temp Max: {selectedAmostra.temp_max}°{selectedAmostra.unidade}</Text>
-            <Text style={styles.modalItem}>Início: {new Date(selectedAmostra.data_inicio).toLocaleString()}</Text>
-            <Text style={styles.modalItem}>Fim: {new Date(selectedAmostra.data_fim).toLocaleString()}</Text>
+            <View style={styles.infoBlock}>
+              <Ionicons name="business-outline" size={18} color="#00EBC7" />
+              <Text style={styles.modalItem}> {selectedAmostra.laboratorio}</Text>
+            </View>
+            <View style={styles.infoBlock}>
+              <Ionicons name="thermometer-outline" size={18} color="#00EBC7" />
+              <Text style={styles.modalItem}> Temp. Min: {selectedAmostra.temp_min}°{selectedAmostra.unidade}</Text>
+            </View>
+            <View style={styles.infoBlock}>
+              <Ionicons name="thermometer" size={18} color="#00EBC7" />
+              <Text style={styles.modalItem}> Temp. Máx: {selectedAmostra.temp_max}°{selectedAmostra.unidade}</Text>
+            </View>
+            <View style={styles.infoBlock}>
+              <Ionicons name="time-outline" size={18} color="#00EBC7" />
+              <Text style={styles.modalItem}> Início: {new Date(selectedAmostra.data_inicio).toLocaleString()}</Text>
+            </View>
+            <View style={styles.infoBlock}>
+              <Ionicons name="hourglass-outline" size={18} color="#00EBC7" />
+              <Text style={styles.modalItem}> Fim: {new Date(selectedAmostra.data_fim).toLocaleString()}</Text>
+            </View>
 
             <TouchableOpacity
               style={styles.closeButton}
@@ -153,9 +188,40 @@ export default function AmostrasScreen({ navigation }: any) {
       {/* Botão Nova Amostra */}
       <TouchableOpacity
         style={styles.newSampleButton}
-        onPress={() => navigation.navigate("NewSample")}
+        onPress={() => {
+          if (amostras.length > 0) {
+            const ultimaAmostra = amostras[amostras.length - 1];
+
+            Alert.alert(
+              "Nova amostra",
+              "Deseja substituir a amostra atual ou criar uma nova?",
+              [
+                { text: "Cancelar", style: "cancel" },
+                {
+                  text: "Substituir atual",
+                  style: "destructive",
+                  onPress: async () => {
+                    try {
+                      await api.delete(`/amostras/${ultimaAmostra.id}`);
+                      await fetchAmostras();
+                      navigation.navigate("NewSample");
+                    } catch (error) {
+                      console.log("Erro ao substituir amostra:", error);
+                    }
+                  },
+                },
+                {
+                  text: "Criar nova",
+                  onPress: () => navigation.navigate("NewSample"),
+                },
+              ]
+            );
+          } else {
+            navigation.navigate("NewSample");
+          }
+        }}
       >
-        <Ionicons name="add-circle-outline" size={20} color="#202123" />
+        <Ionicons name="add-circle-outline" size={22} color="#202123" />
         <Text style={styles.newSampleText}>Nova amostra</Text>
       </TouchableOpacity>
     </View>
@@ -242,7 +308,7 @@ const styles = StyleSheet.create({
   },
   modalItem: {
     color: "#DBD7DF",
-    fontSize: 14,
+    fontSize: 17,
     marginBottom: 6,
   },
   closeButton: {
@@ -253,11 +319,73 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   deleteButton: {
-  backgroundColor: "#FF4C4C",
-  padding: 8,
-  borderRadius: 8,
-  justifyContent: "center",
-  alignItems: "center",
-  marginLeft: 10,
-},
+    backgroundColor: "#FF4C4C",
+    padding: 8,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    marginLeft: 10,
+  },
+  cardAmostraGrande: {
+    backgroundColor: "#2A2B32",
+    padding: 20,
+    borderRadius: 14,
+    marginBottom: 15,
+    shadowColor: "#000",
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+
+  cardTitleGrande: {
+    color: "#00EBC7",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+
+  cardSubtitleGrande: {
+    color: "#DBD7DF",
+    fontSize: 15,
+  },
+
+  actionButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 15,
+    alignItems: "center",
+  },
+
+  detailButton: {
+    flexDirection: "row",
+    backgroundColor: "#00EBC7",
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    marginRight: 10,
+  },
+
+  detailButtonText: {
+    color: "#202123",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginLeft: 6,
+  },
+
+  deleteButtonGrande: {
+    backgroundColor: "#FF4C4C",
+    padding: 12,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  infoBlock: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 4,
+  },
+
 });

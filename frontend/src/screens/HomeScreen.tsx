@@ -7,16 +7,19 @@ import { RootStackParamList } from "../navigation/AppNavigator";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import colors from "../theme/colors";
 import testIcon from "../assets/icon.png";
+import { useAuth } from "../contexts/AuthContext";
 
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+   const { user } = useAuth(); 
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Ionicons name="flask-outline" size={28} color="#fff" /> 
-        <Text style={styles.headerText}>Olá, User</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("MyAccount")}>
+<Text style={styles.headerText}>
+            Olá <Text style={{ color: "#2CB67D" }}>{user?.nome || "Usuário"}</Text>
+          </Text>        <TouchableOpacity onPress={() => navigation.navigate("MyAccount")}>
           <Ionicons name="person-circle-outline" size={28} color="#fff" />
         </TouchableOpacity>
       </View>  

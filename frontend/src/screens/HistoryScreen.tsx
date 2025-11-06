@@ -1,25 +1,105 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
+import api from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 
 interface Amostra {
-  id: string;
+  id: number;
   nome: string;
-  ultimaLeitura: string;
+  laboratorio: string;
+  data_inicio: string;
+  data_fim: string;
+  temp_min: number;
+  temp_max: number;
+  unidade: string;
+  id_usuario: number;
 }
 
 export default function HistoricoScreen() {
+  const [amostras, setAmostras] = useState<Amostra[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+   const { user } = useAuth(); 
 
-  // Mock de dados
-  const amostras: Amostra[] = [
-    { id: "1", nome: "Amostra Bac-16/09/25", ultimaLeitura: "26ºC" },
-    { id: "2", nome: "Amostra Bac-15/09/25", ultimaLeitura: "28ºC" },
-    { id: "3", nome: "Amostra Bac-14/09/25", ultimaLeitura: "27ºC" },
-  ];
+  const fetchAmostras = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get("/amostras");
+      setAmostras(response.data);
+    } catch (error) {
+      console.log("Erro ao buscar amostras:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // Filtrar pelo texto de busca
+  const handleDeleteAmostra = async (id: number) => {
+    Alert.alert(
+      "Excluir amostra",
+      "Tem certeza que deseja excluir esta amostra?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await api.delete(`/amostras/${id}`);
+              await fetchAmostras();
+            } catch (error) {
+              console.log("Erro ao excluir amostra:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  // 🔹 Função para limpar todo o histórico
+  const handleClearHistory = async () => {
+    Alert.alert(
+      "Limpar histórico",
+      "Deseja realmente excluir todo o histórico de amostras?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sim, excluir tudo",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await api.delete("/amostras/all"); // Rota que deleta todas
+              setAmostras([]);
+              Alert.alert("Histórico excluído com sucesso!");
+            } catch (error) {
+              console.log("Erro ao limpar histórico:", error);
+              Alert.alert("Erro", "Não foi possível limpar o histórico.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  // Recarrega quando a tela ganha foco
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchAmostras();
+    }, [])
+  );
+
+  // Filtrar amostras pelo texto de busca
   const filtered = amostras.filter((item) =>
     item.nome.toLowerCase().includes(search.toLowerCase())
   );
@@ -27,12 +107,24 @@ export default function HistoricoScreen() {
   return (
     <View style={styles.container}>
       {/* Cabeçalho */}
+       {/* Cabeçalho com botão limpar */}
       <View style={styles.header}>
-        <Ionicons name="flask-outline" size={28} color="#DBD7DF" />
-        <Text style={styles.headerText}>
-          Olá <Text style={{ color: "#2CB67D" }}>user01</Text>
-        </Text>
-        <Ionicons name="person-circle-outline" size={28} color="#DBD7DF" />
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Ionicons name="flask-outline" size={28} color="#DBD7DF" />
+          <Text style={styles.headerText}>
+            Olá <Text style={{ color: "#2CB67D" }}>{user?.nome || "Usuário"}</Text>
+          </Text>
+          <Ionicons name="person-circle-outline" size={28} color="#DBD7DF" />
+        </View>
+
+        {/* 🧹 Botão limpar histórico */}
+        <TouchableOpacity
+          style={styles.clearButton}
+          onPress={handleClearHistory}
+        >
+          <Ionicons name="trash-outline" size={18} color="#fff" />
+          <Text style={styles.clearButtonText}>Limpar</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Barra de pesquisa */}
@@ -47,24 +139,46 @@ export default function HistoricoScreen() {
         />
       </View>
 
-      {/* Lista de Amostras */}
-      <FlatList
-        data={filtered}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.cardTitle}>{item.nome}</Text>
-            <Text style={styles.cardSubtitle}>
-              Última leitura: {item.ultimaLeitura}
+      {/* Indicador de carregamento */}
+      {loading ? (
+        <ActivityIndicator size="large" color="#00EBC7" style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>{item.nome}</Text>
+              <Text style={styles.cardSubtitle}>
+                Laboratório: {item.laboratorio}
+              </Text>
+              <Text style={styles.cardSubtitle}>
+                Temp Min: {item.temp_min}°{item.unidade}
+              </Text>
+              <Text style={styles.cardSubtitle}>
+                Temp Max: {item.temp_max}°{item.unidade}
+              </Text>
+              <Text style={styles.cardSubtitle}>
+                Início: {new Date(item.data_inicio).toLocaleString()}
+              </Text>
+              <Text style={styles.cardSubtitle}>
+                Fim: {new Date(item.data_fim).toLocaleString()}
+              </Text>
+              <TouchableOpacity
+                                  style={styles.deleteButton}
+                                  onPress={() => handleDeleteAmostra(item.id)}
+                                >
+                                  <Ionicons name="trash-outline" size={20} color="#fff" />
+                                </TouchableOpacity>
+            </View>
+          )}
+          ListEmptyComponent={
+            <Text style={{ color: "#DBD7DF", textAlign: "center", marginTop: 20 }}>
+              Nenhuma amostra encontrada
             </Text>
-          </View>
-        )}
-        ListEmptyComponent={
-          <Text style={{ color: "#DBD7DF", textAlign: "center", marginTop: 20 }}>
-            Nenhuma amostra encontrada
-          </Text>
-        }
-      />
+          }
+        />
+      )}
 
       {/* Paginação */}
       <View style={styles.pagination}>
@@ -104,6 +218,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     color: "#DBD7DF",
+  },
+   clearButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FF4C4C",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+  clearButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    marginLeft: 4,
   },
   searchBox: {
     flexDirection: "row",
@@ -146,5 +273,13 @@ const styles = StyleSheet.create({
   pageText: {
     color: "#DBD7DF",
     fontSize: 16,
+  },
+  deleteButton: {
+    backgroundColor: "#FF4C4C",
+    padding:4,
+    borderRadius: 4,
+    position: "absolute",
+    bottom: 10,
+    right: 10,
   },
 });

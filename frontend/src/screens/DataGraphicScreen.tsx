@@ -20,14 +20,6 @@ const DataGraphicScreen: React.FC = () => {
     { x: 5, y: 26 },
   ];
 
-  const humidityData = [
-    { x: 1, y: 50 },
-    { x: 2, y: 55 },
-    { x: 3, y: 52 },
-    { x: 4, y: 58 },
-    { x: 5, y: 60 },
-  ];
-
   const [menuVisible, setMenuVisible] = useState(false);
 
   const openMenu = () => setMenuVisible(true);
@@ -40,7 +32,6 @@ const DataGraphicScreen: React.FC = () => {
 
   // Últimos valores
   const lastTemp = tempData[tempData.length - 1].y;
-  const lastHum = humidityData[humidityData.length - 1].y;
 
   // Trocar tipo de gráfico
   const toggleChartType = () => {
@@ -108,23 +99,14 @@ const DataGraphicScreen: React.FC = () => {
           <Text style={styles.statValue}>{lastTemp}°C</Text>
           <Text style={styles.statLabel}>Temperatura</Text>
         </View>
-        <View style={styles.statBox}>
-          <Text style={styles.statValue}>{lastHum}%</Text>
-          <Text style={styles.statLabel}>Umidade</Text>
-        </View>
-      </View>
-
+        
       {/* Gráficos */}
       <ChartCard
         title="Temperatura (°C)"
         data={tempData}
         chartType={chartType}
       />
-      <ChartCard
-        title="Umidade (%)"
-        data={humidityData}
-        chartType={chartType}
-      />
+    </View>
 
       {/* Navegação por datas */}
       <View style={styles.navRow}>
