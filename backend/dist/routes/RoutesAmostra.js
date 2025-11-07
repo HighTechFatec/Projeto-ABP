@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const amostraController_1 = require("../controllers/amostraController");
+const router = (0, express_1.Router)();
+router.get('/', amostraController_1.amostraController.getAll);
+router.get('/:id', amostraController_1.amostraController.getById);
+router.post('/', amostraController_1.amostraController.create);
+router.put('/:id', amostraController_1.amostraController.update);
+router.delete('/:id', amostraController_1.amostraController.delete);
+exports.default = router;

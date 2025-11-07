@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const avisoControllers_1 = require("../controllers/avisoControllers");
+const router = (0, express_1.Router)();
+router.get('/', avisoControllers_1.avisoControllers.getAllAvisos);
+router.get('/:id', avisoControllers_1.avisoControllers.getAvisosById);
+router.post("/", avisoControllers_1.avisoControllers.createAviso);
+router.put("/", avisoControllers_1.avisoControllers.updateAviso);
+router.delete("/:id", avisoControllers_1.avisoControllers.deleteAviso);
+exports.default = router;
