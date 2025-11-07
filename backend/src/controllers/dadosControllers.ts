@@ -1,6 +1,5 @@
-
-import { Request, Response } from 'express';
-import  ModelDados from '../model/Dados';
+import { Request, Response } from "express";
+import ModelDados from "../model/Dados";
 
 export const dadosControllers = {
   async getAllDados(req: Request, res: Response): Promise<void> {
@@ -15,13 +14,13 @@ export const dadosControllers = {
     try {
       const id = parseInt(req.params.id);
       if (isNaN(id)) {
-        res.status(400).json({ error: 'ID inválido' });
+        res.status(400).json({ error: "ID inválido" });
         return;
       }
 
       const dados = await ModelDados.findById(id);
       if (!dados) {
-        res.status(404).json({ error: 'Dado não encontrado' });
+        res.status(404).json({ error: "Dado não encontrado" });
         return;
       }
 
@@ -29,5 +28,5 @@ export const dadosControllers = {
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
-  }
+  },
 };

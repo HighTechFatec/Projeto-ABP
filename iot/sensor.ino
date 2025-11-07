@@ -1,5 +1,5 @@
 #include <WiFi.h>
-#include <PubSubClient.h>
+#include <HTTPClient.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
@@ -8,15 +8,10 @@
 const char* ssid = "LAB 108";
 const char* password = "fatec258";
 
-const char* mqtt_server = "10.68.55.212";
-const int mqtt_port = 1883;
-const char* mqtt_topic = "sensors/temperature";
+const char* serverUrl = "http://localhost:3011/dados";
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
-
-WiFiClient espClient;
-PubSubClient client(espClient);
 
 void setup_wifi() {
   Serial.print("Connecting to Wi-Fi...");
@@ -47,25 +42,37 @@ void reconnect() {
 void setup() {
   Serial.begin(9600);
   setup_wifi();
-  client.setServer(mqtt_server, mqtt_port);
   sensors.begin();
 }
 
 void loop() {
-  if (!client.connected()) reconnect();
-  client.loop();
-
   sensors.requestTemperatures();
   float tempC = sensors.getTempCByIndex(0);
 
   if (tempC != DEVICE_DISCONNECTED_C) {
-    char payload[50];
-    snprintf(payload, sizeof(payload), "{\"temperature\":%.2f}", tempC);
-
-    Serial.print("Publishing: ");
+   String payload = "{\"temperature\": " + String(tempC, 2) + "}";
+    Serial.print("Sending POST request with payload: ");
     Serial.println(payload);
 
-    client.publish(mqtt_topic, payload);
+    if (WiFi.status() == WL_CONNECTED) {
+      HTTPClient http;
+      http.begin(serverUrl);
+      http.addHeader("Content-Type", "application/json");
+      
+      int httpResponseCode = http.POST(payload);
+
+      if (httpResponseCode > 0) {
+        Serial.printf("✅ POST success, code: %d\n", httpResponseCode);
+        String response = http.getString();
+        Serial.println("Response: " + response);
+      } else {
+        Serial.printf("❌ POST failed, error: %s\n", http.errorToString(httpResponseCode).c_str());
+      }
+
+      http.end();
+    } else {
+      Serial.println("⚠️ Wi-Fi disconnected!");
+    }
   } else {
     Serial.println("Error: Could not read temperature");
   }
