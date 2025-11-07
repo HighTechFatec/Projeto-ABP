@@ -1,13 +1,20 @@
 import { Pool, PoolConfig } from 'pg';
+import dotenv from 'dotenv';
 import type types = require('../types');
 
+dotenv.config();
+
+const isProduction = process.env.NODE_ENV === 'production';
 
 const dbConfig: types.DatabaseConfig = {
-  host: process.env.DB_HOST || 'localhost',  
-  port: parseInt(process.env.DB_PORT || '5432'),  
-  database: process.env.DB_NAME || 'teste',  
-  user: process.env.DB_USER || 'postgres',  
-  password: process.env.DB_PASSWORD || '123',  
+  host: process.env.DB_HOST || 'localhost',
+  port: parseInt(process.env.DB_PORT || '5432'),
+  database: process.env.DB_NAME || 'teste',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || '123',
+  ssl: isProduction
+    ? { rejectUnauthorized: false } // 🔹 Necessário para Supabase
+    : false, // 🔹 Desativa SSL em ambiente local
 };
 
 class Database {
