@@ -8,9 +8,9 @@ router.post('/',userController.createUser);
 router.post('/login',userController.loginUser);
 
 //Rotas protegidas
-router.get('/', authMiddleware, userController.getAllUsers);
-router.get('/:id', authMiddleware, userController.getUserById);
-router.put('/:id', authMiddleware, userController.updateUser);
-router.delete('/:id', authMiddleware, userController.deleteUser);
+router.get('/', userController.getAllUsers);
+router.get('/:id', userController.getUserById);
+router.put('/:id', userController.updateUser);
+router.delete('/:id', userController.deleteUser);
 
 export default router

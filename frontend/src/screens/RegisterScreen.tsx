@@ -4,6 +4,7 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import colors from "../theme/colors";
+import api from "../services/api";
 
 type RegisterScreenProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -40,31 +41,27 @@ const RegisterScreen: React.FC = () => {
   if (!validarSenha()) return;
 
   try {
-    const response = await fetch("http://10.68.55.240:3011/api/usuario", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        nome,
-        email,
-        senha,
-        telefone,
-        sigla_laboratorio: laboratorio, // envia a sigla
-      }),
+    const response = await api.post("/api/usuario", {
+      nome,
+      email,
+      senha,
+      telefone,
+      sigla_laboratorio: laboratorio,
     });
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      Alert.alert("Erro", data.message || "Erro ao criar usuário");
-      return;
-    }
+    console.log("Usuário cadastrado com sucesso:", response.data);
 
     Alert.alert("Sucesso", "Usuário criado com sucesso!", [
       { text: "OK", onPress: () => navigation.goBack() },
     ]);
-  } catch (error) {
-    console.error(error);
-    Alert.alert("Erro", "Não foi possível conectar ao servidor");
+  } catch (error: any) {
+    console.error("Erro ao cadastrar usuário:", error);
+
+    if (error.response && error.response.data && error.response.data.message) {
+      Alert.alert("Erro", error.response.data.message);
+    } else {
+      Alert.alert("Erro", "Não foi possível conectar ao servidor");
+    }
   }
 };
 

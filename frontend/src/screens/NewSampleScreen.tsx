@@ -44,40 +44,40 @@ export default function AmostraCreateScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleSave = async () => {
-  if (!medicao || !laboratorio) {
-    Alert.alert("Erro", "Preencha todos os campos obrigatórios");
-    return;
-  }
+    if (!medicao || !laboratorio) {
+      Alert.alert("Erro", "Preencha todos os campos obrigatórios");
+      return;
+    }
 
-  try {
-    const body = {
-      nome: medicao,
-      laboratorio: laboratorio,
-      data_inicio: new Date().toISOString(),
-      data_fim: new Date().toISOString(),
-      temp_min: tempMin,
-      temp_max: tempMax,
-      unidade: unit,
-      id_usuario: idUsuario,
-    };
+    try {
+      const body = {
+        nome: medicao,
+        laboratorio: laboratorio,
+        data_inicio: new Date().toISOString(),
+        data_fim: new Date().toISOString(),
+        temp_min: tempMin,
+        temp_max: tempMax,
+        unidade: unit,
+        id_usuario: idUsuario,
+      };
 
-    console.log("Payload amostra:", body);
+      console.log("Payload amostra:", body);
 
-  const response = await api.post("http://10.68.55.240:3011/amostras", body);
-  console.log(response.data);
-      
-    Alert.alert("Sucesso", "Amostra criada com sucesso!");
-    navigation.goBack();
+      const response = await api.post("/amostras", body);
+      console.log(response.data);
 
-  } catch (error: any) {
-    console.log("Erro completo:", error);
-    console.log("Erro response.data:", error.response?.data);
-    Alert.alert(
-      "Erro",
-      error.response?.data?.message || error.message || "Falha ao criar amostra"
-    );
-  }
-};
+      Alert.alert("Sucesso", "Amostra criada com sucesso!");
+      navigation.goBack();
+
+    } catch (error: any) {
+      console.log("Erro completo:", error);
+      console.log("Erro response.data:", error.response?.data);
+      Alert.alert(
+        "Erro",
+        error.response?.data?.message || error.message || "Falha ao criar amostra"
+      );
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -115,7 +115,7 @@ export default function AmostraCreateScreen() {
           />
         </View>
 
-         {/* ID Usuário (campo editável) */}
+        {/* ID Usuário (campo editável) */}
         <View style={styles.inputBox}>
           <Text style={styles.label}>ID Usuário</Text>
           <TextInput
