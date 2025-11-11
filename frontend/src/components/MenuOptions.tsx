@@ -30,8 +30,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   image: {
-    width: 120,
-    height: 120,
+    width: 80,
+    height: 60,
     resizeMode: "contain",
   },
   text: {
