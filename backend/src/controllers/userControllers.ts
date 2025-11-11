@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { jwtConfig } from "../config/auth";
 import Modelusuario from "../model/Usuario";
 import { AppError } from "../utils/AppError";
+import database from "../config/database";
 
 export const userController = {
   async getAllUsers(
@@ -139,6 +140,26 @@ export const userController = {
       });
   }  catch (error) {
       next(error);
+    }
+  },
+
+  async savePushToken(req: Request, res: Response) {
+    const { id_usuario, expo_push_token } = req.body;
+
+    if (!id_usuario || !expo_push_token) {
+      return res.status(400).json({ message: "id_usuario e expo_push_token são obrigatórios." });
+    }
+
+    try {
+      await database.query(
+        'UPDATE usuario SET expo_push_token = $1 WHERE id = $2',
+        [expo_push_token, id_usuario]
+      );
+
+      return res.status(200).json({ message: "Token salvo com sucesso!" });
+    } catch (error) {
+      console.error("Erro ao salvar token:", error);
+      return res.status(500).json({ message: "Erro ao salvar token." });
     }
   },
 };
