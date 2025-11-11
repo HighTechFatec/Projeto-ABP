@@ -9,14 +9,56 @@ import {
   BackHandler,
   Alert,
   useWindowDimensions,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import colors from "../theme/colors";
 import { useAuth } from "../contexts/AuthContext";
+import api from "../services/api";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
 
 type LoginScreenProp = NativeStackNavigationProp<RootStackParamList, "Login">;
+
+// Função para registrar e obter o token
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== "granted") {
+      Alert.alert("Permissão negada", "Ative as notificações para receber alertas.");
+      return;
+    }
+
+    // ⚠️ Altere para o seu ID do projeto Expo (veja no app.json)
+    const projectId = "seu-project-id-no-expo";
+    token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+    console.log("Expo Push Token:", token);
+  } else {
+    Alert.alert("Aviso", "Notificações só funcionam em dispositivos físicos.");
+  }
+
+  if (Platform.OS === "android") {
+    Notifications.setNotificationChannelAsync("default", {
+      name: "default",
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: "#FF231F7C",
+    });
+  }
+
+  return token;
+}
 
 const LoginScreen: React.FC = () => {
   const navigation = useNavigation<LoginScreenProp>();
@@ -36,8 +78,26 @@ const LoginScreen: React.FC = () => {
   }
 
   try {
-    await signIn(usuario, senha);
+    // Faz login normalmente
+    const loggedUser = (await signIn(usuario, senha)) as any;
     setMensagem("✅ Login realizado com sucesso!");
+
+    // 🔹 Obtém o token do Expo
+    const token = await registerForPushNotificationsAsync();
+    if (token) {
+      // Tenta obter o id do retorno do signIn de forma segura
+      const userId = loggedUser?.id ?? loggedUser?.user?.id ?? null;
+      if (userId) {
+        // 🔹 Envia o token para o backend
+        await api.post("/api/usuario/token", {
+          id_usuario: userId,
+          expo_push_token: token,
+        });
+        console.log("Token registrado no servidor:", token);
+      } else {
+        console.warn("Não foi possível obter o id do usuário; token não enviado.");
+      }
+    }
 
   } catch (error: any) {
     setMensagem("❌ " + (error.message || "Erro ao fazer login"));
