@@ -64,8 +64,8 @@ useFocusEffect(
 );
 
   // Últimos valores
-const lastTemp = dados.length > 0 ? dados[dados.length - 1].y : "--";
-
+const dadosInvertidos = [...dados].reverse();
+const lastTemp = dadosInvertidos.length > 0 ? dadosInvertidos[dadosInvertidos.length - 1].y : "--";
   // Trocar tipo de gráfico
   const toggleChartType = () => {
     setChartType(chartType === "line" ? "bar" : "line");

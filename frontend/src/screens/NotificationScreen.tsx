@@ -65,6 +65,8 @@ export default function NotificationScreen() {
   const [avisos, setAvisos] = useState<Aviso[]>([]);
   const [filteredAvisos, setFilteredAvisos] = useState<Aviso[]>([]);
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
+    const [refreshing, setRefreshing] = useState(false); // 🆕 estado para reload
+
 
   const API_URL = "https://projeto-abp.onrender.com/avisos";
 
@@ -135,6 +137,13 @@ export default function NotificationScreen() {
     setFilteredAvisos(avisos);
   };
 
+  // 🆕 Função que recarrega ao puxar para baixo
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await fetchAvisos();
+    setRefreshing(false);
+  };
+  
   return (
     <View style={styles.container}>
       {/* Campo de busca */}
@@ -149,7 +158,7 @@ export default function NotificationScreen() {
         />
       </View>
 
-      {/* Lista de avisos */}
+      {/* Lista de avisos com pull-to-refresh */}
       <FlatList
         data={filteredAvisos}
         keyExtractor={(item) => item.id.toString()}
@@ -169,9 +178,10 @@ export default function NotificationScreen() {
         ListEmptyComponent={
           <Text style={styles.emptyText}>Nenhum aviso encontrado.</Text>
         }
+        refreshing={refreshing}      // 🆕 indica o estado de atualização
+        onRefresh={handleRefresh}    // 🆕 função chamada ao puxar para baixo
       />
 
-      {/* Botão limpar */}
       <TouchableOpacity onPress={handleClear}>
         <Text style={styles.clearText}>Limpar Busca</Text>
       </TouchableOpacity>
