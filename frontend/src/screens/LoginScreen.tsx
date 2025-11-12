@@ -41,7 +41,7 @@ async function registerForPushNotificationsAsync() {
     }
 
     // ⚠️ Altere para o seu ID do projeto Expo (veja no app.json)
-    const projectId = "seu-project-id-no-expo";
+    const projectId = "0d1b4e17-8af1-4772-a82c-1b496f5b81a8";
     token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
     console.log("Expo Push Token:", token);
   } else {

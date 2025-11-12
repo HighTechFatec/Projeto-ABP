@@ -1,13 +1,12 @@
 import { Expo, ExpoPushMessage } from "expo-server-sdk";
 
-// Cria uma instância do cliente Expo
 const expo = new Expo();
 
-// Função para enviar notificações push
 export async function sendPushNotification(
   expoPushToken: string,
   title: string,
-  body: string
+  body: string,
+  data?: Record<string, unknown>
 ) {
   if (!Expo.isExpoPushToken(expoPushToken)) {
     console.error(`❌ Token inválido: ${expoPushToken}`);
@@ -18,9 +17,16 @@ export async function sendPushNotification(
     {
       to: expoPushToken,
       sound: "default",
-      title,
-      body,
-      data: { withSome: "data" },
+      title: "Alerta de Nova Temperatura",
+      body: "Foi detectada uma nova temperatura, clique para visualizar!",
+      data: {
+        screen: "Notificações", // 👈 Dica: envie o nome da tela ou dados
+        ...(data ?? {}),
+      },
+      priority: "high",
+      channelId: "default",
+      badge: 1,
+      subtitle: "⚠️ Alerta de temperatura",
     },
   ];
 
