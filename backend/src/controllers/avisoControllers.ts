@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import ModelAvisos from '../model/Avisos';
 import { CreateAvisoRequest, UpdateAvisoRequest } from '../types';
+import { sendPushNotification } from "../utils/pushNotification";
+import database from '../config/database';
 
 export const avisoControllers = {
     async getAllAvisos(req: Request, res: Response): Promise<void> {
@@ -34,15 +36,43 @@ export const avisoControllers = {
 
   async createAviso(req: Request, res: Response): Promise<void> {
     try {
-      const { temp_min,temp_max,id_usuario }: CreateAvisoRequest = req.body;
+      const { temp_min, temp_max, id_usuario }: CreateAvisoRequest = req.body;
 
-      if (!temp_min || !temp_max ||!id_usuario) {
-        res.status(400).json({ error: 'Temperatura maxima e minina é necessaria' });
+      // ✅ Validação
+      if (!temp_min || !temp_max || !id_usuario) {
+        res.status(400).json({ error: "Temperatura máxima, mínima e ID do usuário são necessários." });
         return;
       }
-      const newAviso = await ModelAvisos.create({ temp_min,temp_max,id_usuario });
-      res.status(201).json(newAviso);
+
+      // ✅ Cria o aviso normalmente (mantendo sua lógica atual)
+      const newAviso = await ModelAvisos.create({ temp_min, temp_max, id_usuario });
+
+      // ✅ Após criar, busca o token do usuário no banco
+      const result = await database.query(
+        "SELECT token_push FROM usuario WHERE id = $1",
+        [id_usuario]
+      );
+
+      const user = result.rows[0];
+
+      // ✅ Se o usuário tiver token_push salvo, envia a notificação
+      if (user && user.token_push) {
+        await sendPushNotification(
+          user.token_push,
+          "Aviso de Temperatura",
+          `Limite configurado: ${temp_min}°C a ${temp_max}°C`
+        );
+      } else {
+        console.warn(`⚠️ Usuário ${id_usuario} não possui token_push cadastrado.`);
+      }
+
+      // ✅ Retorna resposta
+      res.status(201).json({
+        message: "Aviso criado com sucesso!",
+        aviso: newAviso,
+      });
     } catch (error: any) {
+      console.error("❌ Erro ao criar aviso:", error);
       res.status(400).json({ error: error.message });
     }
   },
