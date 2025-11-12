@@ -6,8 +6,14 @@ import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import colors from "../theme/colors";
-import testIcon from "../assets/icon.png";
 import { useAuth } from "../contexts/AuthContext";
+
+import thermometerIcon from "../assets/thermometer.png";
+import graphIcon from "../assets/graph.png";
+import historyIcon from "../assets/history.png";
+import notificationIcon from "../assets/notification.png";
+import userIcon from "../assets/user.png";
+import cardIcon from "../assets/card.png";
 
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -33,20 +39,25 @@ const Home: React.FC = () => {
         />
       </View>
       
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 15 }} style={{ maxHeight: 170 }}>
-        <MenuOptions text="Amostra" image={testIcon} navigatesTo="Sample"/> 
-        <MenuOptions text="Gráficos" image={testIcon} navigatesTo="Graphs"/>
-        <MenuOptions text="Histórico" image={testIcon} navigatesTo="History"/>
-        <MenuOptions text="Notificação" image={testIcon} navigatesTo="Notifications"/>
-        <MenuOptions text="Minha conta" image={testIcon} navigatesTo="MyAccount"/>
+      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 15 }} style={{ maxHeight: 110 }}>
+        <MenuOptions text="Amostra" image={thermometerIcon} navigatesTo="Sample"/> 
+        <MenuOptions text="Gráficos" image={graphIcon} navigatesTo="Graphs"/>
+        <MenuOptions text="Histórico" image={historyIcon} navigatesTo="History"/>
+        <MenuOptions text="Notificação" image={notificationIcon} navigatesTo="Notifications"/>
+        <MenuOptions text="Minha conta" image={userIcon} navigatesTo="MyAccount"/>
       </ScrollView>
 
       <View style={styles.card}>
-        <Image source={testIcon} style={styles.cardImage}/>
-        <View style={{ paddingHorizontal: 10, paddingVertical: 17 }}>
-          <Text style={{ color: colors.highlight, fontWeight: "bold", fontSize: 18 }}>Título</Text>
-          <Text style={{ color: colors.white, marginBottom: 15 }}>Subtítulo</Text>
-          <Text style={{ color: colors.white }}>Lorem Ipsum</Text>
+        <Image source={cardIcon} style={styles.cardImage}/>
+        <View style={{ paddingHorizontal: 15, paddingVertical: 17 }}>
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <Text style={{ color: colors.highlight, fontWeight: "bold", fontSize: 18, marginBottom: 15 }}>Temperatura:</Text>
+            <Text style={{ color: colors.white, fontSize: 18, marginLeft: 10 }}>-- °C</Text>
+          </View>
+          <View style={{ display: "flex", flexDirection: "row" }}>
+            <Text style={{ color: colors.highlight, fontWeight: "bold", fontSize: 18, marginBottom: 15 }}>Laboratório:</Text>
+            <Text style={{ color: colors.white, fontSize: 18, marginLeft: 10 }}>Lab-01</Text>
+          </View>
         </View>
       </View>
     </View>
