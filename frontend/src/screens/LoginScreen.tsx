@@ -172,8 +172,8 @@ const LoginScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/favicon.png")} style={styles.logo} />
-      <Text style={styles.title}>LabTemp IoT</Text>
+      <Image source={require("../assets/logo-semFundo.png")} style={styles.logo} />
+      <Text style={styles.title}>LabConnect</Text>
 
       <TextInput
         style={styles.input}
