@@ -172,7 +172,7 @@ const LoginScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/logo-semFundo.png")} style={styles.logo} />
+      <Image source={require("../assets/Logo_LabConnectSF.png")} style={styles.logo} />
       <Text style={styles.title}>LabConnect</Text>
 
       <TextInput

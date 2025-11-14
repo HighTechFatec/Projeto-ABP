@@ -12,7 +12,7 @@ const WelcomeScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/Logo_LabConnect_Alternativo.png")} style={styles.logo} />
+      <Image source={require("../assets/Logo_LabConnectSF.png")} style={styles.logo} />
 
       <Text style={styles.title}>LabTemp IoT</Text>
 
