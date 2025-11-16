@@ -20,7 +20,7 @@ interface AuthContextData {
   user: User | null;
   token: string | null;
   loading: boolean;
-  signIn(email: string, senha: string): Promise<void>;
+  signIn(email: string, senha: string): Promise<any>;
   signOut(): Promise<void>;
   updateUser(data: Partial<User>): Promise<any>;
 }
@@ -73,21 +73,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   async function signIn(email: string, senha: string) {
-    try {
-      const response = await api.post("/api/usuario/login", { email, senha });
-      const { token, user } = response.data;
+  try {
+    const response = await api.post("/api/usuario/login", { email, senha });
+    const { token, user } = response.data;
 
-      await AsyncStorage.setItem("@token", token);
-      await AsyncStorage.setItem("@user", JSON.stringify(user));
+    await AsyncStorage.setItem("@token", token);
+    await AsyncStorage.setItem("@user", JSON.stringify(user));
 
-      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      setUser(user);
-      setToken(token);
-    } catch (error) {
-      console.error("Login error:", error);
-      throw new Error("E-mail ou senha inválidos");
-    }
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    setUser(user);
+    setToken(token);
+
+    return { user, token }; // 🔥 AGORA RETORNA!
+  } catch (error) {
+    console.error("Login error:", error);
+    throw new Error("E-mail ou senha inválidos");
   }
+}
 
   async function signOut() {
     await AsyncStorage.multiRemove(["@user", "@token"]);

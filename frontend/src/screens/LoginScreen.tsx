@@ -78,26 +78,30 @@ const LoginScreen: React.FC = () => {
   }
 
   try {
-    // Faz login normalmente
-    const loggedUser = (await signIn(usuario, senha)) as any;
-    setMensagem("✅ Login realizado com sucesso!");
+    // Agora loggedUser tem { user, token }
+    const loggedUser = await signIn(usuario, senha);
 
-    // 🔹 Obtém o token do Expo
-    const token = await registerForPushNotificationsAsync();
-    if (token) {
-      // Tenta obter o id do retorno do signIn de forma segura
-      const userId = loggedUser?.id ?? loggedUser?.user?.id ?? null;
-      if (userId) {
-        // 🔹 Envia o token para o backend
-        await api.post("/api/usuario/token", {
-          id_usuario: userId,
-          expo_push_token: token,
-        });
-        console.log("Token registrado no servidor:", token);
-      } else {
-        console.warn("Não foi possível obter o id do usuário; token não enviado.");
-      }
+    console.log("Retorno do signIn:", loggedUser);
+
+    const userId = loggedUser?.user?.id;
+
+    if (!userId) {
+      console.error("❌ ID do usuário não encontrado.");
+      return;
     }
+
+    const token = await registerForPushNotificationsAsync();
+
+    if (token) {
+      await api.post("/api/usuario/token", {
+        id_usuario: userId,
+        expo_push_token: token,
+      });
+
+      console.log("Token salvo com sucesso:", token);
+    }
+
+    setMensagem("✅ Login realizado com sucesso!");
 
   } catch (error: any) {
     setMensagem("❌ " + (error.message || "Erro ao fazer login"));
