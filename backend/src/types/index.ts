@@ -13,6 +13,7 @@ export interface Usuario{
     senha:string;
     telefone:string;
     id_laboratorio:number;
+    expo_push_token?:string;
 }
 export interface Laboratorio{
     id?:number;
@@ -36,7 +37,8 @@ export interface CreateUserRequest{
     senha:string;
     telefone:string;
     id_laboratorio?:number;
-    sigla_laboratorio:string
+    sigla_laboratorio:string;
+    expo_push_token?:string;
 }
 export interface UpdateRequest{
     nome?:string;
@@ -44,6 +46,7 @@ export interface UpdateRequest{
     senha?:string;
     telefone?:string;
     id_laboratorio?:number;
+    expo_push_token?:string;
 }
 export interface CreateAvisoRequest{
     temp_min:number;
