@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "LabConnect",
-    "slug": "LabConnect",
+    "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/logo-semFundo.png",
@@ -31,6 +31,7 @@
       "eas": {
         "projectId": "0d1b4e17-8af1-4772-a82c-1b496f5b81a8"
       }
-    }
+    },
+    "owner": "andremc331"
   }
 }

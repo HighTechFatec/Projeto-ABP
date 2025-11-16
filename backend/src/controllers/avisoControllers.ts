@@ -49,16 +49,16 @@ export const avisoControllers = {
 
       // ✅ Após criar, busca o token do usuário no banco
       const result = await database.query(
-        "SELECT token_push FROM usuario WHERE id = $1",
+        "SELECT expo_push_token FROM usuario WHERE id = $1",
         [id_usuario]
       );
 
       const user = result.rows[0];
 
       // ✅ Se o usuário tiver token_push salvo, envia a notificação
-      if (user && user.token_push) {
+      if (user && user.expo_push_token) {
         await sendPushNotification(
-          user.token_push,
+          user.expo_push_token,
           "Aviso de Temperatura",
           `Limite configurado: ${temp_min}°C a ${temp_max}°C`
         );
