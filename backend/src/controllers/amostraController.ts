@@ -107,4 +107,17 @@ export const amostraController = {
       next(error);
     }
   },
+
+  async deleteAll(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const deleted = await ModelAmostra.deleteAll();
+
+    res.json({
+      message: 'Todas as amostras foram deletadas com sucesso!',
+      quantidade: deleted,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 };

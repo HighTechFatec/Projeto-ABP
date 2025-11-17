@@ -60,6 +60,11 @@ export class ModelAmostra {
     );
     return result.rows[0] || null;
   }
+
+  async deleteAll() {
+  const result = await database.query('DELETE FROM amostras RETURNING *');
+  return result.rowCount; // retorna quantas foram deletadas
+}
 }
 
 export default new ModelAmostra();
