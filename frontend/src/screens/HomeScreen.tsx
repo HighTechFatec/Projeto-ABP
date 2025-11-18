@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import MenuOptions from "../components/MenuOptions";
 import { View, Text, StyleSheet, Image, TextInput, ScrollView, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../navigation/AppNavigator";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import colors from "../theme/colors";
@@ -14,10 +14,48 @@ import historyIcon from "../assets/history.png";
 import notificationIcon from "../assets/notification.png";
 import userIcon from "../assets/user.png";
 import cardIcon from "../assets/card.png";
+import api from "../services/api";
 
 const Home: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
    const { user } = useAuth(); 
+     const [dados, setDados] = useState<any[]>([]);
+       const [loading, setLoading] = useState(true);
+     
+
+     // Buscar dados do backend
+  const fetchDados = async () => {
+  try {
+    const response = await api.get("/dados");
+    const data = response.data;
+
+    // Mapeia os dados para o formato esperado pelo gráfico
+    const formatado = data.map((item: any, index: number) => ({
+      x: index + 1,
+      y: Number(item.temperatura),
+      data: item.data_hora,
+    }));
+
+    setDados(formatado);
+  } catch (error) {
+    console.error("❌ Erro ao buscar dados:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+// Atualiza quando a tela ganha foco
+useFocusEffect(
+  React.useCallback(() => {
+    fetchDados();
+  }, [])
+);
+
+
+
+     // Últimos valores
+const dadosInvertidos = [...dados].reverse();
+const lastTemp = dadosInvertidos.length > 0 ? dadosInvertidos[dadosInvertidos.length - 1].y : "--";
 
   return (
     <View style={styles.container}>
@@ -52,7 +90,7 @@ const Home: React.FC = () => {
         <View style={{ paddingHorizontal: 15, paddingVertical: 17 }}>
           <View style={{ display: "flex", flexDirection: "row" }}>
             <Text style={{ color: colors.highlight, fontWeight: "bold", fontSize: 18, marginBottom: 15 }}>Temperatura:</Text>
-            <Text style={{ color: colors.white, fontSize: 18, marginLeft: 10 }}>-- °C</Text>
+            <Text style={{ color: colors.white, fontSize: 18, marginLeft: 10 }}>{lastTemp}°</Text>
           </View>
           <View style={{ display: "flex", flexDirection: "row" }}>
             <Text style={{ color: colors.highlight, fontWeight: "bold", fontSize: 18, marginBottom: 15 }}>Laboratório:</Text>

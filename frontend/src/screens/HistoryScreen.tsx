@@ -79,7 +79,7 @@ export default function HistoricoScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              await api.delete("/amostras/all"); // Rota que deleta todas
+              await api.delete("/amostras"); // Rota que deleta todas
               setAmostras([]);
               Alert.alert("Histórico excluído com sucesso!");
             } catch (error) {
@@ -123,7 +123,7 @@ export default function HistoricoScreen() {
           onPress={handleClearHistory}
         >
           <Ionicons name="trash-outline" size={18} color="#fff" />
-          <Text style={styles.clearButtonText}>Limpar</Text>
+          <Text style={styles.clearButtonText}>Excluir</Text>
         </TouchableOpacity>
       </View>
 
