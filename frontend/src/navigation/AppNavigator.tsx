@@ -100,7 +100,6 @@ function DrawerNavigator() {
       }}
     >
       <Drawer.Screen name="Home" component={HomeScreen} />      
-      <Drawer.Screen options={{title: "Nova Amostra"}} name="NewSample" component={NewSampleScreen} />
       <Drawer.Screen options={{title: "Amostras"}} name="Sample" component={SampleScreen} />
       <Drawer.Screen options={{title: "Gráficos"}} name="Graphs" component={DataGraphicScreen} />
       <Drawer.Screen options={{title: "Notificações"}} name="Notifications" component={NotificationScreen} />

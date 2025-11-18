@@ -111,10 +111,6 @@ export default function HistoricoScreen() {
       <View style={styles.header}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Ionicons name="flask-outline" size={28} color="#DBD7DF" />
-          <Text style={styles.headerText}>
-            Olá <Text style={{ color: "#2CB67D" }}>{user?.nome || "Usuário"}</Text>
-          </Text>
-          <Ionicons name="person-circle-outline" size={28} color="#DBD7DF" />
         </View>
 
         {/* 🧹 Botão limpar histórico */}

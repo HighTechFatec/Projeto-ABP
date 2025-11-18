@@ -10,7 +10,6 @@ import {
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../theme/colors";
 import api from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 

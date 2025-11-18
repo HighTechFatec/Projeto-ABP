@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import {View,Text,TextInput,StyleSheet,TouchableOpacity,Image,Alert,} from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Alert,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../navigation/AppNavigator";
@@ -33,103 +44,121 @@ const RegisterScreen: React.FC = () => {
 
   // Função para enviar requisição ao backend
   const handleRegister = async () => {
-  if (!nome || !laboratorio || !email || !senha) {
-    Alert.alert("Erro", "Todos os campos obrigatórios devem ser preenchidos");
-    return;
-  }
-
-  if (!validarSenha()) return;
-
-  try {
-    const response = await api.post("/api/usuario", {
-      nome,
-      email,
-      senha,
-      telefone,
-      sigla_laboratorio: laboratorio,
-    });
-
-    console.log("Usuário cadastrado com sucesso:", response.data);
-
-    Alert.alert("Sucesso", "Usuário criado com sucesso!", [
-      { text: "OK", onPress: () => navigation.goBack() },
-    ]);
-  } catch (error: any) {
-    console.error("Erro ao cadastrar usuário:", error);
-
-    if (error.response && error.response.data && error.response.data.message) {
-      Alert.alert("Erro", error.response.data.message);
-    } else {
-      Alert.alert("Erro", "Não foi possível conectar ao servidor");
+    if (!nome || !laboratorio || !email || !senha) {
+      Alert.alert("Erro", "Todos os campos obrigatórios devem ser preenchidos");
+      return;
     }
-  }
-};
 
+    if (!validarSenha()) return;
 
-  return (
-    <View style={styles.container}>
-      <Image source={require("../assets/favicon.png")} style={styles.logo} />
-      <Text style={styles.title}>LabTemp IoT</Text>
+    try {
+      const response = await api.post("/api/usuario", {
+        nome,
+        email,
+        senha,
+        telefone,
+        sigla_laboratorio: laboratorio,
+      });
 
-      <TextInput
-        style={styles.input}
-        placeholder="Nome usuário"
-        placeholderTextColor={colors.text}
-        value={nome}
-        onChangeText={setNome}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Sigla do Laboratório"
-        placeholderTextColor={colors.text}
-        value={laboratorio}
-        onChangeText={setLaboratorio}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Celular"
-        placeholderTextColor={colors.text}
-        keyboardType="phone-pad"
-        value={telefone}
-        onChangeText={setTelefone}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="E-mail"
-        placeholderTextColor={colors.text}
-        keyboardType="email-address"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        placeholderTextColor={colors.text}
-        secureTextEntry
-        value={senha}
-        onChangeText={setSenha}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Confirmar senha"
-        placeholderTextColor={colors.text}
-        secureTextEntry
-        value={confirmarSenha}
-        onChangeText={setConfirmarSenha}
-      />
+      console.log("Usuário cadastrado com sucesso:", response.data);
 
-      <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.8}
-        onPress={handleRegister}
+      Alert.alert("Sucesso", "Usuário criado com sucesso!", [
+        { text: "OK", onPress: () => navigation.goBack() },
+      ]);
+    } catch (error: any) {
+      console.error("Erro ao cadastrar usuário:", error);
+
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        Alert.alert("Erro", error.response.data.message);
+      } else {
+        Alert.alert("Erro", "Não foi possível conectar ao servidor");
+      }
+    }
+  };
+
+   return (
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.buttonText}>Salvar</Text>
-      </TouchableOpacity>
+        <Image source={require("../assets/Logo_LabConnectSF.png")} style={styles.logo} />
+        <Text style={styles.title}>LabConnect</Text>
 
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.link}>Voltar</Text>
-      </TouchableOpacity>
-    </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Nome usuário"
+          placeholderTextColor={colors.text}
+          value={nome}
+          onChangeText={setNome}
+          returnKeyType="next"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Sigla do Laboratório"
+          placeholderTextColor={colors.text}
+          value={laboratorio}
+          onChangeText={setLaboratorio}
+          returnKeyType="next"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Celular"
+          placeholderTextColor={colors.text}
+          keyboardType="phone-pad"
+          value={telefone}
+          onChangeText={setTelefone}
+          returnKeyType="next"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="E-mail"
+          placeholderTextColor={colors.text}
+          keyboardType="email-address"
+          value={email}
+          onChangeText={setEmail}
+          returnKeyType="next"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Senha"
+          placeholderTextColor={colors.text}
+          secureTextEntry
+          value={senha}
+          onChangeText={setSenha}
+          returnKeyType="next"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirmar senha"
+          placeholderTextColor={colors.text}
+          secureTextEntry
+          value={confirmarSenha}
+          onChangeText={setConfirmarSenha}
+          returnKeyType="done"
+        />
+
+        <TouchableOpacity
+          style={styles.button}
+          activeOpacity={0.8}
+          onPress={handleRegister}
+        >
+          <Text style={styles.buttonText}>Salvar</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.link}>Voltar</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -138,9 +167,12 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: colors.background,
     padding: 20,
   },
   logo: {
