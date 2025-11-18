@@ -8,7 +8,7 @@
 const char* ssid = "LAB 108";
 const char* password = "fatec258";
 
-const char* serverUrl = "http://localhost:3011/dados";
+const char* serverUrl = "https://dashboard.render.com/web/srv-d477rmi4d50c73fvspb0/dados";
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
@@ -77,5 +77,5 @@ void loop() {
     Serial.println("Error: Could not read temperature");
   }
 
-  delay(5000); // 5 seconds
+  delay(60000); // 1 minuto
 }
