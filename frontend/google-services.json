@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "127877363044",
+    "project_id": "labconnect-6c837",
+    "storage_bucket": "labconnect-6c837.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:127877363044:android:bdc150a07ccd8c5931b671",
+        "android_client_info": {
+          "package_name": "com.andremc331.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7X60s8CUzl3N4S2E0iqebxq-wnMiZ-go"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
