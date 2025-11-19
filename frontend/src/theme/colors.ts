@@ -17,6 +17,9 @@ export default {
   // Texto secundário
   text: "#DBD7DF", // Cinza Texto
 
+  //Texto sem arquivo
+  gray: "#6B7280", // Cinza Médio
+
   // Texto padrão (para contraste)
   white: "#FFFFFF",
   black: "#000000",

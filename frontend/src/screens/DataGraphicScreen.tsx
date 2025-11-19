@@ -6,6 +6,7 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Menu, Provider } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,7 +16,7 @@ import api from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 
 type DataPoint = {
-  x: number; 
+  x: number;
   y: number;
   data: string;
 };
@@ -27,13 +28,23 @@ const DataGraphicScreen: React.FC = () => {
   const [period, setPeriod] = useState<"dia" | "semana" | "mês">("dia");
   const [chartType, setChartType] = useState<"line" | "bar">("line");
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [dados, setDados] = useState<any[]>([]);
+  const [dados, setDados] = useState<DataPoint[]>([]);
   const [loading, setLoading] = useState(true);
+  const [todasAsDatas, setTodasAsDatas] = useState<string[]>([]);
 
   // Buscar dados do backend
-  const fetchDados = async () => {
+  const fetchDados = async (dataFiltro?: Date) => {
     try {
-      const response = await api.get("/dados");
+      setLoading(true);
+      let url = "/dados";
+
+      // Se tiver uma data específica, filtra por ela
+      if (dataFiltro) {
+        const dataFormatada = dataFiltro.toISOString().split("T")[0];
+        url = `/dados?data=${dataFormatada}`;
+      }
+
+      const response = await api.get(url);
       const data = response.data;
 
       // Mapeia os dados usando timestamp real
@@ -52,8 +63,37 @@ const DataGraphicScreen: React.FC = () => {
       setDados(formatado);
     } catch (error) {
       console.error("Erro ao buscar dados:", error);
+      Alert.alert("Erro", "Não foi possível carregar os dados");
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Buscar todas as datas disponíveis
+  const fetchDatasDisponiveis = async () => {
+    try {
+      const response = await api.get<string[]>("/dados/datas/disponiveis");
+      setTodasAsDatas(response.data);
+    } catch (error) {
+      console.error("Erro ao buscar datas disponíveis:", error);
+      try {
+        interface DadoItem {
+          data_hora: string;
+        }
+        const response = await api.get<DadoItem[]>("/dados");
+        const datasUnicas: string[] = [
+          ...new Set(
+            response.data.map(
+              (item: DadoItem) =>
+                new Date(item.data_hora).toISOString().split("T")[0]
+            )
+          ),
+        ];
+
+        setTodasAsDatas(datasUnicas);
+      } catch (fallbackError) {
+        console.error("Erro no fallback de datas:", fallbackError);
+      }
     }
   };
 
@@ -61,29 +101,156 @@ const DataGraphicScreen: React.FC = () => {
   useFocusEffect(
     React.useCallback(() => {
       fetchDados();
+      fetchDatasDisponiveis();
     }, [])
   );
+
+  // Funções para navegar entre dias
+  const goToPreviousDay = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() - 1);
+    setCurrentDate(newDate);
+    fetchDados(newDate);
+  };
+
+  const goToNextDay = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + 1);
+
+    // Não permite navegar para datas futuras
+    const today = new Date();
+    today.setHours(23, 59, 59, 999);
+
+    if (newDate <= today) {
+      setCurrentDate(newDate);
+      fetchDados(newDate);
+    } else {
+      Alert.alert("Aviso", "Não é possível navegar para datas futuras");
+    }
+  };
+
+  // Verifica se existem dados para o dia anterior
+  const hasPreviousDay = () => {
+    const previousDate = new Date(currentDate);
+    previousDate.setDate(previousDate.getDate() - 1);
+    const previousDateString = previousDate.toISOString().split("T")[0];
+
+    // Se temos a lista de datas disponíveis, verifica nela
+    if (todasAsDatas.length > 0) {
+      return todasAsDatas.includes(previousDateString);
+    }
+
+    // Caso contrário, assume que pode voltar até uma data razoável
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() - 30); // Limite de 30 dias para trás
+    return previousDate >= minDate;
+  };
+
+  // Verifica se existem dados para o próximo dia
+  const hasNextDay = () => {
+    const nextDate = new Date(currentDate);
+    nextDate.setDate(nextDate.getDate() + 1);
+    const today = new Date();
+
+    // Não permite navegar para datas futuras
+    if (nextDate > today) {
+      return false;
+    }
+
+    const nextDateString = nextDate.toISOString().split("T")[0];
+
+    // Se temos a lista de datas disponíveis, verifica nela
+    if (todasAsDatas.length > 0) {
+      return todasAsDatas.includes(nextDateString);
+    }
+
+    return nextDate <= today;
+  };
+
+  // Função para aplicar filtros de período
+  const aplicarFiltroPeriodo = async (
+    novoPeriodo: "dia" | "semana" | "mês"
+  ) => {
+    setPeriod(novoPeriodo);
+
+    try {
+      let periodoParam = "";
+      switch (novoPeriodo) {
+        case "dia":
+          periodoParam = "dia";
+          break;
+        case "semana":
+          periodoParam = "semana";
+          break;
+        case "mês":
+          periodoParam = "mes";
+          break;
+      }
+
+      const response = await api.get(`/dados?periodo=${periodoParam}`);
+      const data = response.data;
+
+      const formatado: DataPoint[] = data.map((item: any) => {
+        const timestamp = new Date(item.data_hora).getTime();
+        return {
+          x: timestamp,
+          y: Number(item.temperatura),
+          data: item.data_hora,
+        };
+      });
+
+      formatado.sort((a: DataPoint, b: DataPoint) => a.x - b.x);
+      setDados(formatado);
+    } catch (error) {
+      console.error("Erro ao aplicar filtro:", error);
+      Alert.alert("Erro", "Não foi possível aplicar o filtro");
+
+      // Fallback: busca dados normais se o filtro falhar
+      try {
+        const response = await api.get("/dados");
+        const data = response.data;
+        const formatado: DataPoint[] = data.map((item: any) => {
+          const timestamp = new Date(item.data_hora).getTime();
+          return {
+            x: timestamp,
+            y: Number(item.temperatura),
+            data: item.data_hora,
+          };
+        });
+        formatado.sort((a: DataPoint, b: DataPoint) => a.x - b.x);
+        setDados(formatado);
+      } catch (fallbackError) {
+        console.error("Erro no fallback:", fallbackError);
+      }
+    }
+  };
 
   // Última temperatura
   const lastTemp = dados.length > 0 ? dados[dados.length - 1].y : "--";
 
-   return (
+  return (
     <Provider>
       <View style={styles.container}>
-        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+        >
           {/* Header com temperatura atual e lápis */}
           <View style={styles.headerContainer}>
             <View style={styles.temperatureContainer}>
               <Text style={styles.temperatureValue}>{lastTemp}°C</Text>
               <Text style={styles.temperatureLabel}>Temperatura</Text>
             </View>
-            
+
             <View style={styles.menuContainer}>
               <Menu
                 visible={menuVisible}
                 onDismiss={closeMenu}
                 anchor={
-                  <TouchableOpacity onPress={openMenu} style={styles.menuButton}>
+                  <TouchableOpacity
+                    onPress={openMenu}
+                    style={styles.menuButton}
+                  >
                     <Ionicons name="pencil" size={22} color={colors.white} />
                   </TouchableOpacity>
                 }
@@ -119,7 +286,9 @@ const DataGraphicScreen: React.FC = () => {
                   styles.filterButton,
                   period === item && styles.filterActive,
                 ]}
-                onPress={() => setPeriod(item as any)}
+                onPress={() =>
+                  aplicarFiltroPeriodo(item as "dia" | "semana" | "mês")
+                }
               >
                 <Text
                   style={[
@@ -149,12 +318,43 @@ const DataGraphicScreen: React.FC = () => {
 
         {/* Navegação por datas */}
         <View style={styles.navRow}>
+          <TouchableOpacity
+            style={[
+              styles.navButton,
+              !hasPreviousDay() && styles.navButtonDisabled,
+            ]}
+            onPress={goToPreviousDay}
+            disabled={!hasPreviousDay()}
+          >
+            <Ionicons
+              name="chevron-back"
+              size={22}
+              color={!hasPreviousDay() ? colors.gray : colors.white}
+            />
+          </TouchableOpacity>
+
           <Text style={styles.dateText}>
             {currentDate.toLocaleDateString("pt-BR", {
               weekday: "long",
               day: "2-digit",
+              month: "long",
             })}
           </Text>
+
+          <TouchableOpacity
+            style={[
+              styles.navButton,
+              !hasNextDay() && styles.navButtonDisabled,
+            ]}
+            onPress={goToNextDay}
+            disabled={!hasNextDay()}
+          >
+            <Ionicons
+              name="chevron-forward"
+              size={22}
+              color={!hasNextDay() ? colors.gray : colors.white}
+            />
+          </TouchableOpacity>
         </View>
       </View>
     </Provider>
@@ -209,7 +409,7 @@ const styles = StyleSheet.create({
   },
   menu: {
     marginTop: 40,
-    zIndex: 1001, 
+    zIndex: 1001,
   },
   menuContent: {
     backgroundColor: colors.cardBackground,
@@ -249,26 +449,35 @@ const styles = StyleSheet.create({
   },
   chartContainer: {
     marginBottom: 20,
-    zIndex: 1, 
+    zIndex: 1,
   },
   navRow: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 30,
     paddingVertical: 16,
     backgroundColor: colors.cardBackground,
     borderTopWidth: 1,
     borderTopColor: colors.primary,
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
+  },
+  navButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+  },
+  navButtonDisabled: {
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
   },
   dateText: {
     fontSize: 16,
     color: colors.white,
     fontWeight: "500",
+    textAlign: "center",
   },
 });
 

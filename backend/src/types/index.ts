@@ -57,13 +57,6 @@ export interface UpdateAvisoRequest{
     temp_min?:number;
     temp_max?:number;
 }
-export interface DatabaseConfig {
-  host: string;
-  port: number;
-  database: string;
-  user: string;
-  password: string;
-}
 
 export interface Amostra {
   id?: number;
@@ -92,6 +85,10 @@ export interface UpdateAmostraRequest {
   data_fim?: Date;
   temp_min?: number;
   temp_max?: number;
+}
+
+export interface DataRow {
+  data: string;
 }
 
 declare global {
