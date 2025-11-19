@@ -11,24 +11,19 @@ import { Menu, Provider } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import ChartCard from "../components/ChartCard";
 import colors from "../theme/colors";
-import api from "../services/api"; // <- seu axios configurado
+import api from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 
+type DataPoint = {
+  x: number; 
+  y: number;
+  data: string;
+};
+
 const DataGraphicScreen: React.FC = () => {
-  const tempData = [
-    { x: 1, y: 22 },
-    { x: 2, y: 24 },
-    { x: 3, y: 23 },
-    { x: 4, y: 25 },
-    { x: 5, y: 26 },
-  ];
-
   const [menuVisible, setMenuVisible] = useState(false);
-
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
-
-  // Estados
   const [period, setPeriod] = useState<"dia" | "semana" | "mês">("dia");
   const [chartType, setChartType] = useState<"line" | "bar">("line");
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -37,131 +32,132 @@ const DataGraphicScreen: React.FC = () => {
 
   // Buscar dados do backend
   const fetchDados = async () => {
-  try {
-    const response = await api.get("/dados");
-    const data = response.data;
+    try {
+      const response = await api.get("/dados");
+      const data = response.data;
 
-    // Mapeia os dados para o formato esperado pelo gráfico
-    const formatado = data.map((item: any, index: number) => ({
-      x: index + 1,
-      y: Number(item.temperatura),
-      data: item.data_hora,
-    }));
+      // Mapeia os dados usando timestamp real
+      const formatado: DataPoint[] = data.map((item: any) => {
+        const timestamp = new Date(item.data_hora).getTime();
+        return {
+          x: timestamp,
+          y: Number(item.temperatura),
+          data: item.data_hora,
+        };
+      });
 
-    setDados(formatado);
-  } catch (error) {
-    console.error("❌ Erro ao buscar dados:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+      // Ordena por timestamp (mais antigo para mais recente)
+      formatado.sort((a: DataPoint, b: DataPoint) => a.x - b.x);
 
-// Atualiza quando a tela ganha foco
-useFocusEffect(
-  React.useCallback(() => {
-    fetchDados();
-  }, [])
-);
-
-  // Últimos valores
-const dadosInvertidos = [...dados].reverse();
-const lastTemp = dadosInvertidos.length > 0 ? dadosInvertidos[dadosInvertidos.length - 1].y : "--";
-  // Trocar tipo de gráfico
-  const toggleChartType = () => {
-    setChartType(chartType === "line" ? "bar" : "line");
+      setDados(formatado);
+    } catch (error) {
+      console.error("Erro ao buscar dados:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
-    <ScrollView style={styles.container}>
-      {/* Header com filtros */}
-      <Provider>
-        <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
-          <Menu
-            visible={menuVisible}
-            onDismiss={closeMenu}
-            anchor={
-              <TouchableOpacity onPress={openMenu}>
-                <Ionicons name="pencil" size={22} color={colors.white} />
+  // Atualiza quando a tela ganha foco
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchDados();
+    }, [])
+  );
+
+  // Última temperatura
+  const lastTemp = dados.length > 0 ? dados[dados.length - 1].y : "--";
+
+   return (
+    <Provider>
+      <View style={styles.container}>
+        <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+          {/* Header com temperatura atual e lápis */}
+          <View style={styles.headerContainer}>
+            <View style={styles.temperatureContainer}>
+              <Text style={styles.temperatureValue}>{lastTemp}°C</Text>
+              <Text style={styles.temperatureLabel}>Temperatura</Text>
+            </View>
+            
+            <View style={styles.menuContainer}>
+              <Menu
+                visible={menuVisible}
+                onDismiss={closeMenu}
+                anchor={
+                  <TouchableOpacity onPress={openMenu} style={styles.menuButton}>
+                    <Ionicons name="pencil" size={22} color={colors.white} />
+                  </TouchableOpacity>
+                }
+                style={styles.menu}
+                contentStyle={styles.menuContent}
+              >
+                <Menu.Item
+                  onPress={() => {
+                    setChartType("line");
+                    closeMenu();
+                  }}
+                  title="Linha"
+                  style={styles.menuItem}
+                />
+                <Menu.Item
+                  onPress={() => {
+                    setChartType("bar");
+                    closeMenu();
+                  }}
+                  title="Barra"
+                  style={styles.menuItem}
+                />
+              </Menu>
+            </View>
+          </View>
+
+          {/* Filtros DIA/SEMANA/MÊS */}
+          <View style={styles.filterRow}>
+            {["dia", "semana", "mês"].map((item) => (
+              <TouchableOpacity
+                key={item}
+                style={[
+                  styles.filterButton,
+                  period === item && styles.filterActive,
+                ]}
+                onPress={() => setPeriod(item as any)}
+              >
+                <Text
+                  style={[
+                    styles.filterText,
+                    period === item && styles.filterTextActive,
+                  ]}
+                >
+                  {item.toUpperCase()}
+                </Text>
               </TouchableOpacity>
-            }
-          >
-            <Menu.Item
-              onPress={() => {
-                setChartType("line");
-                closeMenu();
-              }}
-              title="Linha"
-            />
-            <Menu.Item
-              onPress={() => {
-                setChartType("bar");
-                closeMenu();
-              }}
-              title="Barra"
-            />
-          </Menu>
+            ))}
+          </View>
+
+          {/* Gráficos */}
+          <View style={styles.chartContainer}>
+            {loading ? (
+              <ActivityIndicator size="large" color={colors.primary} />
+            ) : (
+              <ChartCard
+                title="Temperatura (°C)"
+                data={dados.length > 0 ? dados : []}
+                chartType={chartType}
+              />
+            )}
+          </View>
+        </ScrollView>
+
+        {/* Navegação por datas */}
+        <View style={styles.navRow}>
+          <Text style={styles.dateText}>
+            {currentDate.toLocaleDateString("pt-BR", {
+              weekday: "long",
+              day: "2-digit",
+            })}
+          </Text>
         </View>
-      </Provider>
-
-      {/* Filtros */}
-      <View style={styles.filterRow}>
-        {["dia", "semana", "mês"].map((item) => (
-          <TouchableOpacity
-            key={item}
-            style={[
-              styles.filterButton,
-              period === item && styles.filterActive,
-            ]}
-            onPress={() => setPeriod(item as any)}
-          >
-            <Text
-              style={[
-                styles.filterText,
-                period === item && styles.filterTextActive,
-              ]}
-            >
-              {item.toUpperCase()}
-            </Text>
-          </TouchableOpacity>
-        ))}
       </View>
-
-      {/* Últimos valores */}
-      <View style={styles.statsRow}>
-        <View style={styles.statBox}>
-          <Text style={styles.statValue}>{lastTemp}°C</Text>
-          <Text style={styles.statLabel}>Temperatura</Text>
-        </View>
-
-        {/* Gráficos */}
-        {loading ? (
-  <ActivityIndicator size="large" color={colors.primary} />
-) : (
-  <ChartCard
-    title="Temperatura (°C)"
-    data={dados.length > 0 ? dados : [{ x: 0, y: 0 }]}
-    chartType={chartType}
-  />
-)}
-        
-      </View>
-
-      {/* Navegação por datas */}
-      <View style={styles.navRow}>
-        <TouchableOpacity>
-          <Ionicons name="chevron-back" size={22} color={colors.white} />
-        </TouchableOpacity>
-        <Text style={styles.dateText}>
-          {currentDate.toLocaleDateString("pt-BR", {
-            weekday: "long",
-            day: "2-digit",
-          })}
-        </Text>
-        <TouchableOpacity>
-          <Ionicons name="chevron-forward" size={22} color={colors.white} />
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+    </Provider>
   );
 };
 
@@ -169,31 +165,75 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
     padding: 16,
+    paddingBottom: 80,
   },
-  header: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: colors.white,
-    marginBottom: 12,
-  },
-  headerRow: {
+  headerContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+  },
+  temperatureContainer: {
+    alignItems: "center",
+    flex: 1,
+  },
+  temperatureValue: {
+    fontSize: 48,
+    fontWeight: "bold",
+    color: colors.highlight,
+    textAlign: "center",
+  },
+  temperatureLabel: {
+    fontSize: 16,
+    color: colors.white,
+    textAlign: "center",
+    marginTop: 4,
+  },
+  menuContainer: {
+    position: "absolute",
+    right: 0,
+    top: 10,
+    zIndex: 1000,
+  },
+  menuButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: colors.cardBackground,
+  },
+  menu: {
+    marginTop: 40,
+    zIndex: 1001, 
+  },
+  menuContent: {
+    backgroundColor: colors.cardBackground,
+    zIndex: 1002,
+  },
+  menuItem: {
+    zIndex: 1003,
   },
   filterRow: {
     flexDirection: "row",
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: 24,
+    backgroundColor: colors.cardBackground,
+    borderRadius: 25,
+    padding: 4,
+    marginHorizontal: 10,
   },
   filterButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 14,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
     borderRadius: 20,
-    marginHorizontal: 4,
-    backgroundColor: colors.cardBackground,
+    marginHorizontal: 2,
+    flex: 1,
+    alignItems: "center",
   },
   filterActive: {
     backgroundColor: colors.primary,
@@ -201,36 +241,34 @@ const styles = StyleSheet.create({
   filterText: {
     color: colors.white,
     fontSize: 14,
+    fontWeight: "500",
   },
   filterTextActive: {
     fontWeight: "bold",
-  },
-  statsRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
-  },
-  statBox: {
-    alignItems: "center",
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: colors.highlight,
-  },
-  statLabel: {
-    fontSize: 12,
     color: colors.white,
+  },
+  chartContainer: {
+    marginBottom: 20,
+    zIndex: 1, 
   },
   navRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
+    justifyContent: "center",
     alignItems: "center",
+    paddingHorizontal: 30,
+    paddingVertical: 16,
+    backgroundColor: colors.cardBackground,
+    borderTopWidth: 1,
+    borderTopColor: colors.primary,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   dateText: {
-    fontSize: 14,
+    fontSize: 16,
     color: colors.white,
+    fontWeight: "500",
   },
 });
 
