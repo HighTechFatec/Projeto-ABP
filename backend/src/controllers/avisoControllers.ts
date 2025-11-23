@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import ModelAvisos from '../model/Avisos';
 import { CreateAvisoRequest, UpdateAvisoRequest } from '../types';
-import { sendPushNotification } from "../utils/pushNotification";
+import { sendPushNotification } from "../pushNotification";
 import database from '../config/database';
 
 export const avisoControllers = {

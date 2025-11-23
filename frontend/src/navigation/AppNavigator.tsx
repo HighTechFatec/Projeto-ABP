@@ -9,7 +9,6 @@ import { Alert, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import type { DrawerContentComponentProps } from "@react-navigation/drawer";
 
-// Importando telas
 import WelcomeScreen from "../screens/WelcomeScreen";
 import LoginScreen from "../screens/LoginScreen";
 import RegisterScreen from "../screens/RegisterScreen";
@@ -22,7 +21,6 @@ import NewSampleScreen from "../screens/NewSampleScreen";
 import HistoricoScreen from "../screens/HistoryScreen";
 import { ActivityIndicator } from "react-native-paper";
 
-// Definição dos tipos de rotas
 export type RootStackParamList = {
   Welcome: undefined;
   Login: undefined;
@@ -39,12 +37,12 @@ export type RootStackParamList = {
   App: undefined;
 };
 
-//configuração dos navegadores
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Drawer = createDrawerNavigator<RootStackParamList>();
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
-  const {signOut} = useAuth();
+  const { signOut } = useAuth();
+
   const handleLogout = () => {
     Alert.alert(
       "Sair",
@@ -65,7 +63,8 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItemList {...props} />
-       {/* 🔹 Botão estilizado de Logout */}
+
+      {/* Botão estilizado de Logout */}
       <View style={styles.logoutContainer}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <MaterialIcons name="logout" size={22} color={colors.white} />
@@ -76,12 +75,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   );
 }
 
-// Drawer com as telas de navegação lateral
+// Drawer (menu lateral)
 function DrawerNavigator() {
   return (
     <Drawer.Navigator
       initialRouteName="Home"
-      drawerContent={(props) => <CustomDrawerContent {...props} />} // ⬅️ adiciona o botão aqui
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerShown: true,
         headerStyle: {
@@ -92,27 +91,40 @@ function DrawerNavigator() {
         drawerStyle: {
           backgroundColor: colors.cardBackground,
           width: "60%",
-          height: "50%"
+          height: "50%",
         },
         drawerActiveBackgroundColor: colors.primary,
         drawerActiveTintColor: colors.black,
-        drawerInactiveTintColor: colors.white
+        drawerInactiveTintColor: colors.white,
       }}
     >
-      <Drawer.Screen name="Home" component={HomeScreen} />      
-      <Drawer.Screen options={{title: "Amostras"}} name="Sample" component={SampleScreen} />
-      <Drawer.Screen options={{title: "Gráficos"}} name="Graphs" component={DataGraphicScreen} />
-      <Drawer.Screen options={{title: "Notificações"}} name="Notifications" component={NotificationScreen} />
-      <Drawer.Screen options={{title: "Histórico"}} name="History" component={HistoricoScreen} />
-      <Drawer.Screen options={{title: "Minha conta"}} name="MyAccount" component={MyAccountScreen} />
+      <Drawer.Screen name="Home" component={HomeScreen} />
+      <Drawer.Screen options={{ title: "Amostras" }} name="Sample" component={SampleScreen} />
+      <Drawer.Screen options={{ title: "Gráficos" }} name="Graphs" component={DataGraphicScreen} />
+      <Drawer.Screen options={{ title: "Notificações" }} name="Notifications" component={NotificationScreen} />
+      <Drawer.Screen options={{ title: "Histórico" }} name="History" component={HistoricoScreen} />
+      <Drawer.Screen options={{ title: "Minha conta" }} name="MyAccount" component={MyAccountScreen} />
     </Drawer.Navigator>
   );
 }
 
-//stack de autenticação antes do login
+// Stack principal (Drawer + telas extras)
+function MainStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      {/* Drawer como tela principal */}
+      <Stack.Screen name="App" component={DrawerNavigator} />
+
+      {/* Telas que NÃO aparecem no Drawer */}
+      <Stack.Screen name="NewSample" component={NewSampleScreen} />
+    </Stack.Navigator>
+  );
+}
+
+// Autenticação
 function AuthStack() {
-  return(
-    <Stack.Navigator screenOptions={{headerShown: false}} initialRouteName="Welcome">
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
@@ -120,19 +132,20 @@ function AuthStack() {
   );
 }
 
-// Navegação geral
 const AppNavigator: React.FC = () => {
-  const {user, loading} = useAuth()
-  if (loading){
+  const { user, loading } = useAuth();
+
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size = "large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
+
   return (
     <NavigationContainer>
-      {user ? <DrawerNavigator /> : <AuthStack />}
+      {user ? <MainStack /> : <AuthStack />}
     </NavigationContainer>
   );
 };
@@ -164,6 +177,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#000", // pode trocar pela cor do tema
+    backgroundColor: "#000",
   },
 });

@@ -89,11 +89,7 @@ const LoginScreen: React.FC = () => {
     console.log("🔍 ID do usuário recebido:", userId);
 
     if (!userId) {
-<<<<<<< HEAD
-      console.error(" ID do usuário não encontrado.");
-=======
       console.error("❌ userId está undefined. Não é possível salvar expo token.");
->>>>>>> 627c82cbad99254c5edfd2236636eacc2639ee19
       return;
     }
 
@@ -107,9 +103,6 @@ const LoginScreen: React.FC = () => {
       return;
     }
 
-<<<<<<< HEAD
-    setMensagem(" Login realizado com sucesso!");
-=======
     // Enviar token push para o backend
     await api.post("/api/usuario/token", {
       id_usuario: userId,
@@ -119,7 +112,6 @@ const LoginScreen: React.FC = () => {
     console.log("✅ Token salvo com sucesso no backend:", token);
 
     setMensagem("✅ Login realizado com sucesso!");
->>>>>>> 627c82cbad99254c5edfd2236636eacc2639ee19
 
   } catch (error: any) {
     console.error("❌ Erro no login ou envio do token:", error);
