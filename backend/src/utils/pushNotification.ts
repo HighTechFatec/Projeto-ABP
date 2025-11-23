@@ -1,4 +1,4 @@
-import admin from "./firebase";
+import admin from "../firebase";
 import { Expo } from "expo-server-sdk";
 
 const expo = new Expo();

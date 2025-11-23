@@ -1,8 +1,9 @@
 import admin from "firebase-admin";
-import serviceAccount from "../labconnect-6c837-firebase-adminsdk-fbsvc-d5dba4c664.json";
+
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT as string);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
+  credential: admin.credential.cert(serviceAccount),
 });
 
 export default admin;
