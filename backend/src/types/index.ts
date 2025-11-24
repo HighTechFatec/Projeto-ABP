@@ -38,7 +38,7 @@ export interface CreateUserRequest{
     telefone:string;
     id_laboratorio?:number;
     sigla_laboratorio:string;
-    expo_push_token?:string;
+    fcm_token:string;
 }
 export interface UpdateRequest{
     nome?:string;

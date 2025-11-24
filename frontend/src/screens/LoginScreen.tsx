@@ -61,7 +61,6 @@ const LoginScreen: React.FC = () => {
   }
 
   try {
-    // Agora loggedUser tem { user, token }
     const loggedUser = await signIn(usuario, senha);
 
     console.log("🔍 Retorno do signIn:", loggedUser);
@@ -70,27 +69,26 @@ const LoginScreen: React.FC = () => {
     console.log("🔍 ID do usuário recebido:", userId);
 
     if (!userId) {
-      console.error("❌ userId está undefined. Não é possível salvar expo token.");
+      console.error("❌ userId está undefined. Não é possível salvar FCM token.");
       return;
     }
 
-    // Gera o Firebase Token
-const token = await getFcmToken();
-    console.log("🔍 Expo push token gerado:", token);
+    // 🔥 Gera o FCM Token
+    const fcmToken = await getFcmToken();
+    console.log("🔍 FCM Token gerado:", fcmToken);
 
-    // ⛔ Se o token for undefined, NÃO manda para o backend
-    if (!token) {
-      console.error("❌ expo_push_token está undefined. Não enviando para o backend.");
+    if (!fcmToken) {
+      console.error("❌ fcmToken está undefined. Não enviando para o backend.");
       return;
     }
 
-    // Enviar token push para o backend
+    // 📡 Enviar token push para o backend
     await api.post("/api/usuario/token", {
       id_usuario: userId,
-      expo_push_token: token,
+      fcm_token: fcmToken,
     });
 
-    console.log("✅ Token salvo com sucesso no backend:", token);
+    console.log("✅ Token salvo com sucesso no backend:", fcmToken);
 
     setMensagem("✅ Login realizado com sucesso!");
 

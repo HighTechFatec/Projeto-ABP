@@ -33,7 +33,7 @@ export const userController = {
 
   async createUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { nome, email, senha, sigla_laboratorio, telefone, expo_push_token }: CreateUserRequest = req.body;
+      const { nome, email, senha, sigla_laboratorio, telefone, fcm_token }: CreateUserRequest = req.body;
 
       if (!nome || !email || !senha || !sigla_laboratorio) {
         throw new AppError("Todos os campos são obrigatórios", 400);
@@ -48,7 +48,7 @@ export const userController = {
         senha,
         telefone,
         sigla_laboratorio,
-        expo_push_token // opcional
+        fcm_token // opcional
       });
 
       res.status(201).json(newUser);
@@ -91,7 +91,7 @@ export const userController = {
 
       res.json({
         message: "Usuário deletado com sucesso",
-        user: deletedUser, // inclui expo_push_token
+        user: deletedUser, // inclui fcm_token
       });
     } catch (error) {
       next(error);

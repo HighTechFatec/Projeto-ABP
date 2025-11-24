@@ -26,7 +26,7 @@ export class Modelusuario {
   }
 
   async create(userData: CreateUserRequest): Promise<Usuario> {
-    const { nome, email, senha, telefone, sigla_laboratorio, expo_push_token } = userData;
+    const { nome, email, senha, telefone, sigla_laboratorio, fcm_token } = userData;
 
     // Buscar ID do laboratório
     const labResult = await database.query(
@@ -50,7 +50,7 @@ export class Modelusuario {
       VALUES ($1, $2, $3, $4, $5, $6) 
       RETURNING *
       `,
-      [nome, email, hashedPassword, telefone, id_laboratorio, expo_push_token ?? null]
+      [nome, email, hashedPassword, telefone, id_laboratorio, fcm_token ?? null]
     );
 
     return result.rows[0];
@@ -94,7 +94,7 @@ export class Modelusuario {
     }
 
     if (fcm_token !== undefined) {
-      fields.push(`expo_push_token = $${paramCount}`);
+      fields.push(`fcm_token = $${paramCount}`);
       values.push(fcm_token);
       paramCount++;
     }
