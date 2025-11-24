@@ -10,6 +10,8 @@ router.post('/login',userController.loginUser);
 // ➕ NOVA ROTA: salvar token de push notification
 router.post('/token', userController.savePushToken);
 
+
+
 //Rotas protegidas
 router.get('/', userController.getAllUsers);
 router.get('/:id', userController.getUserById);
