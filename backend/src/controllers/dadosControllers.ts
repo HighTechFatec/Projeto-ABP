@@ -87,7 +87,7 @@ export const dadosControllers = {
         SELECT a.temp_min, a.temp_max, a.id_usuario,
                u.fcm_token
         FROM amostras a
-        JOIN users u ON u.id = a.id_usuario
+        JOIN usuario u ON u.id = a.id_usuario
         WHERE a.laboratorio = $1
           AND NOW() BETWEEN a.data_inicio AND a.data_fim
         LIMIT 1
