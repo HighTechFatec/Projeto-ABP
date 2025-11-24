@@ -7,13 +7,13 @@ export interface DatabaseConfig {
   ssl?: boolean | { rejectUnauthorized: boolean };
 }
 export interface Usuario{
-    id?:number;
+    id:number;
     nome:string;
     email:string;
     senha:string;
     telefone:string;
     id_laboratorio:number;
-    expo_push_token?:string;
+    expo_push_token?:string | null;
 }
 export interface Laboratorio{
     id?:number;

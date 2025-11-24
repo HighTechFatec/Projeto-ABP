@@ -99,36 +99,46 @@ export const userController = {
   },
 
   async loginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const { email, senha } = req.body;
-      if (!email || !senha) throw new AppError("Email e senha são obrigatórios", 400);
+  try {
+    const { email, senha, fcm_token } = req.body; // ⬅️ agora recebendo FCM token
+    if (!email || !senha) throw new AppError("Email e senha são obrigatórios", 400);
 
-      const user = await Modelusuario.findByEmail(email);
-      if (!user) throw new AppError("E-mail ou senha incorretos", 401);
+    const user = await Modelusuario.findByEmail(email);
+    if (!user) throw new AppError("E-mail ou senha incorretos", 401);
 
-      const token = jwt.sign(
-        { id: user.id, email: user.email },
-        jwtConfig.secret as jwt.Secret,
-        { expiresIn: jwtConfig.expiresIn as jwt.SignOptions["expiresIn"] }
-      );
+    // 🔐 Gerar JWT
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      jwtConfig.secret as jwt.Secret,
+      { expiresIn: jwtConfig.expiresIn as jwt.SignOptions["expiresIn"] }
+    );
 
-      res.status(200).json({
-        message: "Login bem-sucedido",
-        token,
-        user: {
-          id: user.id,
-          nome: user.nome,
-          email: user.email,
-          telefone: user.telefone,
-          id_laboratorio: user.id_laboratorio,
-          expo_push_token: user.expo_push_token ?? null,
-        },
-      });
+    // 🟡 Se vier um FCM token do app → atualizar no banco
+    let finalFcmToken = user.expo_push_token;
 
-    } catch (error) {
-      next(error);
+    if (fcm_token) {
+      await Modelusuario.updateExpoPushToken(user.id, fcm_token);
+      finalFcmToken = fcm_token;
     }
-  },
+
+    // 🔙 Retorno final do login
+    res.status(200).json({
+      message: "Login bem-sucedido",
+      token,
+      user: {
+        id: user.id,
+        nome: user.nome,
+        email: user.email,
+        telefone: user.telefone,
+        id_laboratorio: user.id_laboratorio,
+        expo_push_token: finalFcmToken,
+      },
+    });
+
+  } catch (error) {
+    next(error);
+  }
+},
 
  async savePushToken(req: Request, res: Response, next: NextFunction): Promise<void> {
   const { id_usuario, fcm_token } = req.body;

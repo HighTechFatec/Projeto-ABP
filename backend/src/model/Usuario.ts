@@ -123,6 +123,18 @@ export class Modelusuario {
     );
     return result.rows[0] || null;
   }
+
+  async updateExpoPushToken(id: number, token: string): Promise< Usuario | null> {
+  const queryText = `
+    UPDATE usuario 
+    SET expo_push_token = $1 
+    WHERE id = $2
+    RETURNING expo_push_token
+  `;
+  
+  const result = await database.query(queryText, [token, id]);
+  return result.rows[0];
+}
 }
 
 export default new Modelusuario();
