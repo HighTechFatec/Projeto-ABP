@@ -7,13 +7,13 @@ export interface DatabaseConfig {
   ssl?: boolean | { rejectUnauthorized: boolean };
 }
 export interface Usuario{
-    id:number;
-    nome:string;
-    email:string;
-    senha:string;
-    telefone:string;
-    id_laboratorio:number;
-    expo_push_token?:string | null;
+    id: number;
+    nome: string;
+    email: string;
+    senha: string;
+    telefone: string;
+    id_laboratorio: number;
+    fcm_token?: string | null;
 }
 export interface Laboratorio{
     id?:number;
@@ -46,7 +46,7 @@ export interface UpdateRequest{
     senha?:string;
     telefone?:string;
     id_laboratorio?:number;
-    expo_push_token?:string;
+    fcm_token?:string | null;
 }
 export interface CreateAvisoRequest{
     temp_min:number;

@@ -100,28 +100,29 @@ export const userController = {
 
   async loginUser(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { email, senha, fcm_token } = req.body; // ⬅️ agora recebendo FCM token
+    const { email, senha, fcm_token } = req.body;
+
     if (!email || !senha) throw new AppError("Email e senha são obrigatórios", 400);
 
     const user = await Modelusuario.findByEmail(email);
     if (!user) throw new AppError("E-mail ou senha incorretos", 401);
 
-    // 🔐 Gerar JWT
+    // JWT
     const token = jwt.sign(
       { id: user.id, email: user.email },
       jwtConfig.secret as jwt.Secret,
       { expiresIn: jwtConfig.expiresIn as jwt.SignOptions["expiresIn"] }
     );
 
-    // 🟡 Se vier um FCM token do app → atualizar no banco
-    let finalFcmToken = user.expo_push_token;
+    // Usa o novo campo FCM
+    let finalFcmToken = user.fcm_token;
 
+    // Se veio novo token --> atualiza
     if (fcm_token) {
       await Modelusuario.updateExpoPushToken(user.id, fcm_token);
       finalFcmToken = fcm_token;
     }
 
-    // 🔙 Retorno final do login
     res.status(200).json({
       message: "Login bem-sucedido",
       token,
@@ -131,7 +132,7 @@ export const userController = {
         email: user.email,
         telefone: user.telefone,
         id_laboratorio: user.id_laboratorio,
-        expo_push_token: finalFcmToken,
+        fcm_token: finalFcmToken,  // agora correto
       },
     });
 

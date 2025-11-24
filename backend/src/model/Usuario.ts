@@ -46,7 +46,7 @@ export class Modelusuario {
     const result = await database.query(
       `
       INSERT INTO usuario 
-      (nome, email, senha, telefone, id_laboratorio, expo_push_token) 
+      (nome, email, senha, telefone, id_laboratorio, fcm_token) 
       VALUES ($1, $2, $3, $4, $5, $6) 
       RETURNING *
       `,
@@ -57,7 +57,7 @@ export class Modelusuario {
   }
 
   async update(id: number, userData: UpdateRequest): Promise<Usuario | null> {
-    const { nome, email, senha, id_laboratorio, telefone, expo_push_token } = userData;
+    const { nome, email, senha, id_laboratorio, telefone, fcm_token } = userData;
 
     const fields: string[] = [];
     const values: any[] = [];
@@ -93,9 +93,9 @@ export class Modelusuario {
       paramCount++;
     }
 
-    if (expo_push_token !== undefined) {
+    if (fcm_token !== undefined) {
       fields.push(`expo_push_token = $${paramCount}`);
-      values.push(expo_push_token);
+      values.push(fcm_token);
       paramCount++;
     }
 
@@ -124,15 +124,11 @@ export class Modelusuario {
     return result.rows[0] || null;
   }
 
-  async updateExpoPushToken(id: number, token: string): Promise< Usuario | null> {
-  const queryText = `
-    UPDATE usuario 
-    SET expo_push_token = $1 
-    WHERE id = $2
-    RETURNING expo_push_token
-  `;
-  
-  const result = await database.query(queryText, [token, id]);
+  async updateExpoPushToken(id: number, token: string) {
+  const result = await database.query(
+    `UPDATE usuario SET fcm_token = $1 WHERE id = $2 RETURNING fcm_token`,
+    [token, id]
+  );
   return result.rows[0];
 }
 }
