@@ -21,44 +21,25 @@ import { useAuth } from "../contexts/AuthContext";
 import api from "../services/api";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
+import messaging from "@react-native-firebase/messaging";
+
 
 type LoginScreenProp = NativeStackNavigationProp<RootStackParamList, "Login">;
 
 // Função para registrar e obter o token
-async function registerForPushNotificationsAsync() {
-  let token;
+async function getFcmToken() {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
-  if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-
-    if (finalStatus !== "granted") {
-      Alert.alert("Permissão negada", "Ative as notificações para receber alertas.");
-      return;
-    }
-
-    // ⚠️ Altere para o seu ID do projeto Expo (veja no app.json)
-    const projectId = "0d1b4e17-8af1-4772-a82c-1b496f5b81a8";
-    token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
-    console.log("Expo Push Token:", token);
-  } else {
-    Alert.alert("Aviso", "Notificações só funcionam em dispositivos físicos.");
+  if (!enabled) {
+    console.log("🔒 Permissão negada.");
+    return null;
   }
 
-  if (Platform.OS === "android") {
-    Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#FF231F7C",
-    });
-  }
-
+  const token = await messaging().getToken();
+  console.log("🔥 FCM Token:", token);
   return token;
 }
 
@@ -93,8 +74,8 @@ const LoginScreen: React.FC = () => {
       return;
     }
 
-    // Gera o Expo Push Token
-    const token = await registerForPushNotificationsAsync();
+    // Gera o Firebase Token
+const token = await getFcmToken();
     console.log("🔍 Expo push token gerado:", token);
 
     // ⛔ Se o token for undefined, NÃO manda para o backend

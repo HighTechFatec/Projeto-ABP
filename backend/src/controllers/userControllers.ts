@@ -130,25 +130,25 @@ export const userController = {
     }
   },
 
-  async savePushToken(req: Request, res: Response) {
-    const { id_usuario, expo_push_token } = req.body;
+ async savePushToken(req: Request, res: Response, next: NextFunction): Promise<void> {
+  const { id_usuario, fcm_token } = req.body;
 
-    if (!id_usuario || !expo_push_token) {
-      return res
-        .status(400)
-        .json({ message: "id_usuario e expo_push_token são obrigatórios." });
-    }
+  if (!id_usuario || !fcm_token) {
+    res.status(400).json({ message: "id_usuario e fcm_token são obrigatórios" });
+    return;
+  }
 
-    try {
-      await database.query(
-        "UPDATE usuario SET expo_push_token = $1 WHERE id = $2",
-        [expo_push_token, id_usuario]
-      );
+  try {
+    await database.query(
+      "UPDATE usuario SET fcm_token = $1 WHERE id = $2",
+      [fcm_token, id_usuario]
+    );
 
-      return res.status(200).json({ message: "Token salvo com sucesso!" });
-    } catch (error) {
-      console.error("Erro ao salvar token:", error);
-      return res.status(500).json({ message: "Erro ao salvar token." });
-    }
-  },
+    res.status(200).json({ message: "Token FCM salvo!" });
+
+  } catch (e) {
+    console.error("Erro ao salvar FCM:", e);
+    next(e instanceof Error ? e : new AppError("Erro ao salvar token.", 500));
+  }
+}
 };

@@ -5,7 +5,7 @@ import { sendPushNotification } from "../utils/pushNotification";
 import database from '../config/database';
 
 export const avisoControllers = {
-    async getAllAvisos(req: Request, res: Response): Promise<void> {
+  async getAllAvisos(req: Request, res: Response): Promise<void> {
     try {
       const avisos = await ModelAvisos.findAll();
       res.json(avisos);
@@ -49,23 +49,20 @@ export const avisoControllers = {
 
       // ✅ Após criar, busca o token do usuário no banco
       const result = await database.query(
-        "SELECT expo_push_token FROM usuario WHERE id = $1",
+        "SELECT fcm_token FROM usuario WHERE id = $1",
         [id_usuario]
       );
 
       const user = result.rows[0];
 
-      // ✅ Se o usuário tiver token_push salvo, envia a notificação
-      if (user && user.expo_push_token) {
+      if (user?.fcm_token) {
         await sendPushNotification(
-          user.expo_push_token,
+          user.fcm_token,
           "Aviso de Temperatura",
-          `Limite configurado: ${temp_min}°C a ${temp_max}°C`
+          `Limite configurado: ${temp_min}°C a ${temp_max}°C`,
+          { screen: "Notificações" }
         );
-      } else {
-        console.warn(`⚠️ Usuário ${id_usuario} não possui token_push cadastrado.`);
       }
-
       // ✅ Retorna resposta
       res.status(201).json({
         message: "Aviso criado com sucesso!",
@@ -86,7 +83,7 @@ export const avisoControllers = {
       }
 
       const avisoData: UpdateAvisoRequest = req.body;
-      
+
       if (Object.keys(avisoData).length === 0) {
         res.status(400).json({ error: 'Nenhum campo fornecido para atualização' });
         return;
@@ -118,8 +115,8 @@ export const avisoControllers = {
         return;
       }
 
-      res.json({ 
-        message: 'Usuário deletado com sucesso', 
+      res.json({
+        message: 'Usuário deletado com sucesso',
         aviso: deletedAviso
       });
     } catch (error: any) {
