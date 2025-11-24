@@ -35,67 +35,69 @@ export const avisoControllers = {
   },
 
   async createAviso(req: Request, res: Response): Promise<void> {
-  try {
-    const { temp_min, temp_max, id_usuario }: CreateAvisoRequest = req.body;
+    try {
+      const { temp_min, temp_max, id_usuario }: CreateAvisoRequest = req.body;
 
-    if (!temp_min || !temp_max || !id_usuario) {
-      res.status(400).json({ error: "Temperatura máxima, mínima e ID do usuário são necessários." });
-      return;
-    }
+      if (!temp_min || !temp_max || !id_usuario) {
+        res.status(400).json({ error: "Temperatura máxima, mínima e ID do usuário são necessários." });
+        return;
+      }
 
-    // ✔ Cria o aviso normalmente
-    const newAviso = await ModelAvisos.create({ temp_min, temp_max, id_usuario });
+      // ✔ Cria o aviso normalmente
+      const newAviso = await ModelAvisos.create({ temp_min, temp_max, id_usuario });
 
-    // ------------------------------------------------------------------------------
-    // 🔍 BUSCAR ÚLTIMA AMOSTRA ATIVA DESSE USUÁRIO
-    // ------------------------------------------------------------------------------
-    const amostraQuery = await database.query(
-      `
-      SELECT temp_min, temp_max
-      FROM amostras
-      WHERE id_usuario = $1
-        AND NOW() BETWEEN data_inicio AND data_fim
-      ORDER BY data_fim DESC
-      LIMIT 1
-      `,
-      [id_usuario]
-    );
-
-    const amostra = amostraQuery.rows[0];
-
-    // ------------------------------------------------------------------------------
-    // 🔍 BUSCAR TOKEN FCM DO USUÁRIO
-    // ------------------------------------------------------------------------------
-    const result = await database.query(
-      "SELECT fcm_token FROM usuario WHERE id = $1",
-      [id_usuario]
-    );
-
-    const user = result.rows[0];
-
-    // ------------------------------------------------------------------------------
-    // 📲 ENVIAR PUSH NOTIFICATION
-    // ------------------------------------------------------------------------------
-    if (user?.fcm_token) {
-      await sendPushNotification(
-        user.fcm_token,
-        "Aviso de Temperatura",
-        amostra
-          ? `Limite configurado: ${amostra.temp_min}°C a ${amostra.temp_max}°C`
-          : `Aviso configurado para limites ${temp_min}°C a ${temp_max}°C`,
-        { screen: "Notificações" }
+      // ------------------------------------------------------------------------------
+      // 🔍 BUSCAR ÚLTIMA AMOSTRA ATIVA DESSE USUÁRIO
+      // ------------------------------------------------------------------------------
+      const amostraQuery = await database.query(
+        `
+  SELECT temp_min, temp_max, data_inicio, data_fim
+  FROM amostras
+  WHERE id_usuario = $1
+    AND CURRENT_TIMESTAMP BETWEEN data_inicio AND data_fim
+  ORDER BY data_fim DESC
+  LIMIT 1
+  `,
+        [id_usuario]
       );
-    }
 
-    res.status(201).json({
-      message: "Aviso criado com sucesso!",
-      aviso: newAviso,
-    });
-  } catch (error: any) {
-    console.error("❌ Erro ao criar aviso:", error);
-    res.status(400).json({ error: error.message });
-  }
-},
+      console.log("🧪 Resultado busca amostra:", amostraQuery.rows);
+
+      const amostra = amostraQuery.rows[0];
+
+      // ------------------------------------------------------------------------------
+      // 🔍 BUSCAR TOKEN FCM DO USUÁRIO
+      // ------------------------------------------------------------------------------
+      const result = await database.query(
+        "SELECT fcm_token FROM usuario WHERE id = $1",
+        [id_usuario]
+      );
+
+      const user = result.rows[0];
+
+      // ------------------------------------------------------------------------------
+      // 📲 ENVIAR PUSH NOTIFICATION
+      // ------------------------------------------------------------------------------
+      if (user?.fcm_token) {
+        await sendPushNotification(
+          user.fcm_token,
+          "Aviso de Temperatura",
+          amostra
+            ? `Limite configurado: ${amostra.temp_min}°C a ${amostra.temp_max}°C`
+            : `Aviso configurado para limites ${temp_min}°C a ${temp_max}°C`,
+          { screen: "Notificações" }
+        );
+      }
+
+      res.status(201).json({
+        message: "Aviso criado com sucesso!",
+        aviso: newAviso,
+      });
+    } catch (error: any) {
+      console.error("❌ Erro ao criar aviso:", error);
+      res.status(400).json({ error: error.message });
+    }
+  },
 
   async updateAviso(req: Request, res: Response): Promise<void> {
     try {
